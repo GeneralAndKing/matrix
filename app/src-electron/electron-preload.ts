@@ -27,3 +27,23 @@
  *   }
  * }
  */
+import { BrowserWindow } from '@electron/remote'
+import { contextBridge } from 'electron'
+
+contextBridge.exposeInMainWorld('WindowsApi', {
+  minimize: () => {
+    BrowserWindow.getFocusedWindow()?.minimize()
+  },
+  toggleMaximize: () => {
+    const win = BrowserWindow.getFocusedWindow()
+
+    if (win?.isMaximized()) {
+      win?.unmaximize()
+    } else {
+      win?.maximize()
+    }
+  },
+  close: () => {
+    BrowserWindow.getFocusedWindow()?.close()
+  }
+})

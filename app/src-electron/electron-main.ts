@@ -2,7 +2,10 @@ import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import os from 'os'
 import { fileURLToPath } from 'url'
+import { enable, initialize } from '@electron/remote/main/index.js'
 
+// https://quasar.dev/quasar-cli-vite/developing-electron-apps/frameless-electron-window#setting-frameless-window
+initialize()
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform()
 
@@ -19,7 +22,9 @@ function createWindow () {
     width: 1000,
     height: 600,
     useContentSize: true,
+    frame: false,
     webPreferences: {
+      sandbox: false,
       contextIsolation: true,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(
@@ -29,10 +34,11 @@ function createWindow () {
     }
   })
 
+  enable(mainWindow.webContents)
   if (process.env.DEV) {
-    mainWindow.loadURL(process.env.APP_URL)
+    void mainWindow.loadURL(process.env.APP_URL)
   } else {
-    mainWindow.loadFile('index.html')
+    void mainWindow.loadFile('index.html')
   }
 
   if (process.env.DEBUGGING) {

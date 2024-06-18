@@ -1,106 +1,97 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr lff">
     <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+      <q-bar class="q-electron-drag bg-primary">
+        <q-icon name="laptop_chromebook"/>
+        <div>Matrix</div>
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-space/>
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
+        <q-btn dense flat icon="minimize" @click="handleMinimize"/>
+        <q-btn dense flat icon="crop_square" @click="handleToggleMaximize"/>
+        <q-btn dense flat icon="close" @click="handleCloseApp"/>
+      </q-bar>
     </q-header>
 
     <q-drawer
-      v-model="leftDrawerOpen"
+      v-model="drawer"
       show-if-above
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
+      mini-to-overlay
+      :width="200"
+      :breakpoint="500"
       bordered
+      :class="`overflow-hidden column ${$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'}`"
     >
+      <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: '0' }" style="flex: 1">
+        <q-list padding>
+          <q-item v-for="item in menus" :key="item.name" :to="item.path" exact clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon :name="item.icon"/>
+            </q-item-section>
+            <q-item-section> {{ item.name }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item clickable v-ripple>
+          <q-item-section avatar>
+            <q-icon name="settings"/>
+          </q-item-section>
+          <q-item-section>设置</q-item-section>
+        </q-item>
+        <q-item clickable v-ripple>
+          <q-item-section avatar>
+            <q-avatar size="sm">
+              <img alt="avatar" src="https://cdn.quasar.dev/img/boy-avatar.png">
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label lines="1">zhongyue</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <q-scroll-area  :horizontal-thumb-style="{ opacity: '1' }"
+                     style="height: 100%">
+        <q-page class="row items-center justify-evenly">
+          <router-view/>
+        </q-page>
+      </q-scroll-area>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
+import { isElectron } from 'src/utils/action'
 import { ref } from 'vue'
-import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue'
 
-defineOptions({
-  name: 'MainLayout'
-})
+const drawer = ref(true)
+const miniState = ref(false)
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
+const menus = [
+  { name: '创作集合', icon: 'video_library', path: '/' }
 ]
 
-const leftDrawerOpen = ref(false)
+const handleMinimize = () => {
+  if (isElectron()) {
+    window.WindowsApi.minimize()
+  }
+}
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+const handleToggleMaximize = () => {
+  if (isElectron()) {
+    window.WindowsApi.toggleMaximize()
+  }
+}
+
+const handleCloseApp = () => {
+  if (isElectron()) {
+    window.WindowsApi.close()
+  }
 }
 </script>
