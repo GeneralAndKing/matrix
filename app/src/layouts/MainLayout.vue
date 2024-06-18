@@ -56,8 +56,8 @@
     </q-drawer>
 
     <q-page-container>
-      <q-scroll-area  :horizontal-thumb-style="{ opacity: '1' }"
-                     style="height: 100%">
+      <q-scroll-area :horizontal-thumb-style="{ opacity: '1' }"
+                     style="height: calc(100vh - 36px); width: 100%;">
         <q-page class="row items-center justify-evenly">
           <router-view/>
         </q-page>
