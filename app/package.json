@@ -27,6 +27,7 @@
     "@typescript-eslint/parser": "^6.6.0",
     "autoprefixer": "^10.4.2",
     "electron": "^31.0.1",
+    "electron-builder": "^24.3.0",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.19.1",
