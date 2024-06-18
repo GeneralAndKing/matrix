@@ -1,0 +1,4 @@
+debug: false
+port: 3254
+datasource:
+  sqlite3: ./data/sqlite3.db
