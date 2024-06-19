@@ -11,8 +11,4 @@ type AddWorkInput struct {
 	Paths       []string  `json:"paths" binding:"required"`
 }
 
-type WorkPageInput struct {
-	Types []enum.Work `form:"type" binding:"dive,min=1,max=2"`
-	Size  int         `form:"size,default=10"`
-	Page  int         `form:"page,default=0"`
-}
+type AddDouyinUserInput []string

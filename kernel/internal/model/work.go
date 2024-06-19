@@ -14,7 +14,7 @@ type Work struct {
 	Paths       []string  `gorm:"type:text[]"`
 }
 
-func (w Work) ToOutput() dto.WorkOutput {
+func (w Work) Output() dto.WorkOutput {
 	return dto.WorkOutput{
 		Model:       w.Model,
 		Type:        w.Type,
@@ -24,7 +24,11 @@ func (w Work) ToOutput() dto.WorkOutput {
 	}
 }
 
-type Topic struct {
+type DouyinWork struct {
 	gorm.Model
-	Name string `gorm:"type:varchar(255);not null"`
+	DouyinId    string
+	Work        Work
+	Title       string `gorm:"type:varchar(255);not null"`
+	Description string `gorm:"type:text;not null"`
+	//TODO 细化
 }
