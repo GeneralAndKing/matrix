@@ -4,7 +4,6 @@ go 1.22
 
 require (
 	github.com/chromedp/chromedp v0.9.5
-	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-contrib/timeout v1.0.1
 	github.com/gin-contrib/zap v1.1.3
 	github.com/gin-gonic/gin v1.10.0

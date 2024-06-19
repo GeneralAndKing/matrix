@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chromedp/cdproto/page"
 	"io"
+	"kernel/pkg/chromedp_ext/easyjson"
 	"math"
 	"math/rand"
 	"os"
@@ -33,6 +35,17 @@ func WithTimeOut(timeout time.Duration, tasks chromedp.Tasks) chromedp.ActionFun
 		timeoutContext, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
 		return tasks.Do(timeoutContext)
+	}
+}
+
+func StealthBypass() chromedp.ActionFunc {
+	return func(ctx context.Context) error {
+		var err error
+		_, err = page.AddScriptToEvaluateOnNewDocument(StealthJs).Do(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 }
 
@@ -363,4 +376,30 @@ func bezierCubic(p0, p1, p2, p3 point, t float64) point {
 		x: mt2*mt*p0.x + 3*mt2*t*p1.x + 3*mt*t2*p2.x + t2*t*p3.x,
 		y: mt2*mt*p0.y + 3*mt2*t*p1.y + 3*mt*t2*p2.y + t2*t*p3.y,
 	}
+}
+
+// RunCommandWithRes runs any Chrome Dev Tools command, with any params and
+// sets the result to the res parameter. Make sure it is a pointer.
+//
+// In contrast to the native method of chromedp, with this method you can directly
+// pass in a map with the data passed to the command.
+func RunCommandWithRes(method string, params, res any) chromedp.ActionFunc {
+	return chromedp.ActionFunc(func(ctx context.Context) error {
+		i := easyjson.New(params)
+		o := easyjson.New(res)
+
+		return cdp.Execute(ctx, method, i, o)
+	})
+}
+
+// RunCommand runs any Chrome Dev Tools command, with any params.
+//
+// In contrast to the native method of chromedp, with this method you can directly
+// pass in a map with the data passed to the command.
+func RunCommand(method string, params any) chromedp.ActionFunc {
+	return chromedp.ActionFunc(func(ctx context.Context) error {
+		i := easyjson.New(params)
+
+		return cdp.Execute(ctx, method, i, nil)
+	})
 }
