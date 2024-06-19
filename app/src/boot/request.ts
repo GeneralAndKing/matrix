@@ -1,20 +1,62 @@
-import { boot } from 'quasar/wrappers'
 import axios from 'axios'
+import { LoadingBar, Notify } from 'quasar'
 
 const api = axios.create({
-  baseURL: 'https://api.example.com'
+  baseURL: '/api',
+  timeout: 10000
 })
 
-export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
+api.interceptors.request.use(config => {
+  if (config.method !== 'GET') {
+    LoadingBar.start()
+  }
+  return config
+}, error => {
+  LoadingBar.stop()
+  Notify.create({
+    type: 'negative',
+    message: `请求失败：${error.message}`
+  })
+  return Promise.reject(error)
+})
 
-  app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-
-  app.config.globalProperties.$api = api
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+api.interceptors.response.use(async (response) => {
+  LoadingBar.stop()
+  const { status, data } = response
+  if (status >= 400 && status < 500) {
+    console.error(status, data)
+    throw new Error(`获取数据失败：${status}`)
+  }
+  if (status >= 500) {
+    console.error(status, data)
+    Notify.create({
+      type: 'negative',
+      message: '请求失败：服务器内部错误'
+    })
+    throw new Error(`服务器错误：${data}`)
+  }
+  if (status === 201) {
+    Notify.create({
+      type: 'positive',
+      message: '创建成功'
+    })
+    return undefined
+  }
+  if (status === 204) {
+    Notify.create({
+      type: 'positive',
+      message: '操作成功'
+    })
+    return undefined
+  }
+  return data
+}, function (error) {
+  LoadingBar.stop()
+  Notify.create({
+    type: 'negative',
+    message: `请求失败：${error.message}`
+  })
+  return Promise.reject(error)
 })
 
 export { axios, api }

@@ -42,23 +42,21 @@
           </q-item-section>
           <q-item-section>设置</q-item-section>
         </q-item>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/account" exact>
           <q-item-section avatar>
-            <q-avatar size="sm">
-              <img alt="avatar" src="https://cdn.quasar.dev/img/boy-avatar.png">
-            </q-avatar>
+            <q-icon name="account_circle"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label lines="1">zhongyue</q-item-label>
+            <q-item-label lines="1">账号管理</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
 
-    <q-page-container>
-      <q-scroll-area :horizontal-thumb-style="{ opacity: '1' }"
-                     style="height: calc(100vh - 36px); width: 100%;">
-        <q-page class="row items-center justify-evenly">
+      <q-page-container>
+        <q-scroll-area :horizontal-thumb-style="{ opacity: '1' }"
+                       style="height: calc(100vh - 36px); width: 100%;">
+        <q-page class="q-my-md q-mx-md">
           <router-view/>
         </q-page>
       </q-scroll-area>
