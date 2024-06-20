@@ -42,7 +42,7 @@
           </q-item-section>
           <q-item-section>设置</q-item-section>
         </q-item>
-        <q-item clickable v-ripple to="/account" exact>
+        <q-item clickable v-ripple to="/account">
           <q-item-section avatar>
             <q-icon name="account_circle"/>
           </q-item-section>

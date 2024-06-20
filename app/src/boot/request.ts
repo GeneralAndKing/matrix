@@ -4,13 +4,11 @@ import { LoadingBar, Notify } from 'quasar'
 const BASE_URL = 'http://localhost:8080'
 
 const api = axios.create({
-  baseURL: BASE_URL,
-  timeout: 10000
+  baseURL: BASE_URL
 })
 
 const healthApi = axios.create({
-  baseURL: BASE_URL,
-  timeout: 3000
+  baseURL: BASE_URL
 })
 
 LoadingBar.setDefaults({

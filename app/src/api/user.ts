@@ -6,7 +6,7 @@ export interface DouYinUser extends BaseModal{
   description?: string
   douyinId: string
   avatar: string
-  labels?: string[]
+  labels?: string[] | null
   expired: boolean
 }
 
@@ -19,5 +19,14 @@ export const DouYinUserApi = {
   },
   refresh: async (id: number): Promise<void> => {
     return await api.post(`/user/douyin/${id}/refresh`)
+  },
+  update: async (id: number, labelList: string[]) => {
+    return await api.put(`/user/douyin/${id}`, labelList)
+  },
+  delete: async (id: number): Promise<void> => {
+    return await api.delete(`/user/douyin/${id}`)
+  },
+  manage: async (id: number): Promise<void> => {
+    return await api.post(`/user/douyin/${id}/manage`)
   }
 }
