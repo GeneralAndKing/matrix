@@ -17,7 +17,7 @@ const tab = ref('mails')
       indicator-color="primary"
       :breakpoint="0"
     >
-      <q-route-tab name="mails" to="/account/douyin" exact>
+      <q-route-tab name="mails" to="/account" exact>
         <div class="row q-gutter-x-sm">
           <q-img alt="douyin" src="~assets/logo/douyin.svg" width="22px" height="22px"/>
           <div>抖音</div>

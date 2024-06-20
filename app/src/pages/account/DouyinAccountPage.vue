@@ -164,8 +164,10 @@ const handleUpdateLabel = (row: DouYinUser, label: string[], initialValue: strin
           <q-td key="douyinId" :props="props" auto-width>
             {{ props.row.douyinId }}
           </q-td>
-          <q-td key="description" :props="props">
-            {{ props.row.description }}
+          <q-td class="overflow-hidden" style="max-width: 100%;text-wrap: wrap" key="description" :props="props">
+            <div class="ellipsis-2-lines">
+              {{ props.row.description }}
+            </div>
           </q-td>
           <q-td key="labels" class="cursor" auto-width :props="props">
             <div class="cursor-pointer">

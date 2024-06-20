@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
         path: 'account',
         component: () => import('pages/account/AccountPage.vue'),
         children: [
-          { path: 'douyin', component: () => import('pages/account/DouyinAccountPage.vue') }
+          { path: '', component: () => import('pages/account/DouyinAccountPage.vue') }
         ]
       }
     ]

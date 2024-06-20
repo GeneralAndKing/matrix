@@ -54,8 +54,8 @@
     </q-drawer>
 
     <q-page-container>
-      <q-scroll-area style="height: calc(100vh - 36px); width: 100%;">
-        <q-page class="q-my-md q-mx-md">
+      <q-scroll-area style="height: 100vh; width: calc(100% - 5px);">
+        <q-page class="q-pa-md">
           <router-view/>
         </q-page>
       </q-scroll-area>
