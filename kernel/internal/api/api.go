@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/timeout"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func API(debug bool) http.Handler {
 	engine := gin.New()
 	engine.Use(ginzap.Ginzap(zap.L(), time.RFC3339, true))
 	engine.Use(ginzap.RecoveryWithZap(zap.L(), true))
+	engine.Use(cors.Default())
 	engine.Use(func(ctx *gin.Context) {
 		ctx.Next()
 		if ctx.Errors != nil {

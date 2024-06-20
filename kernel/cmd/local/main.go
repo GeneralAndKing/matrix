@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"kernel/internal/api"
@@ -38,10 +39,10 @@ func initLog() {
 	log.SetOutput(zapWriter{logger: production})
 }
 
-func initDatabase() {
+func initDatabase(ctx context.Context) {
 	dataSource := config.GetDataSource()
 	database.RegisterSqlite3(dataSource.Sqlite3)
-	if err := database.Sqlite3Manager(context.Background(), func(db *gorm.DB) error {
+	if err := database.Sqlite3Manager(ctx, func(db *gorm.DB) error {
 		return model.Migrate(db)
 	}); err != nil {
 		panic(err)
@@ -49,20 +50,7 @@ func initDatabase() {
 
 }
 
-func initHttpServer() {
-	application := config.GetApplication()
-	handler := api.API(application.Debug)
-	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: handler,
-	}
-	go func() {
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
-
+func notifyExitSignal(ctx context.Context) {
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
@@ -70,24 +58,40 @@ func initHttpServer() {
 	// kill -2 is syscall.SIGINT
 	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
-	}
-	// catching ctx.Done(). timeout of 5 seconds.
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
+		zap.L().Info("ctx exit is detected", zap.Error(ctx.Err()))
+	case s := <-quit:
+		zap.L().Info("exit signal detected", zap.String("signal", s.String()))
+	}
+}
+
+func initHttpServer(ctx context.Context) {
+	application := config.GetApplication()
+	handler := api.API(application.Debug)
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: handler,
+	}
+	go func() {
+		zap.L().Info("start server success")
+		// service connections
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			zap.L().Fatal("server error", zap.Error(err))
+		}
+	}()
+	notifyExitSignal(ctx)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		zap.L().Fatal("server shutdown error", zap.Error(err))
 	}
 }
 
 func main() {
+	ctx := context.Background()
 	initLog()
-	initDatabase()
-	initHttpServer()
+	initDatabase(ctx)
+	initHttpServer(ctx)
 	_ = zap.L().Sync()
 }
