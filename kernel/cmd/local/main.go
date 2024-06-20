@@ -68,7 +68,7 @@ func notifyExitSignal(ctx context.Context) {
 
 func initHttpServer(ctx context.Context) {
 	application := config.GetApplication()
-	handler := api.API(application.Debug)
+	handler := api.API(ctx, application.Debug)
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: handler,

@@ -1,17 +1,19 @@
 package api
 
 import (
+	"context"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/timeout"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"kernel/internal/service"
+	"kernel/pkg/message"
 	"net/http"
 	"time"
 )
 
-func API(debug bool) http.Handler {
+func API(ctx context.Context, debug bool) http.Handler {
 	if debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -31,10 +33,8 @@ func API(debug bool) http.Handler {
 		}
 
 	})
-	engine.GET("/message")
-	engine.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
+	message.InitAndRegister(ctx, message.WS)
+	engine.GET("/message", service.Message)
 
 	workGroup := engine.Group("/work")
 	workGroup.GET("", service.GetAllWork)

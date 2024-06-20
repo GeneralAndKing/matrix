@@ -12,6 +12,7 @@ import (
 	"kernel/internal/model"
 	"kernel/internal/model/dto"
 	"kernel/pkg/chromedp_ext"
+	"kernel/pkg/message"
 	"net/http"
 	"slices"
 	"strconv"
@@ -51,7 +52,7 @@ func refreshDouyinUser(c context.Context, user model.DouyinUser) (name, douyinId
 			chromedp.AttributeValue(`//*[@id="sub-app"]/div/div[2]/div[1]/div[1]/img`, "src", &avatar, nil),
 		)
 	})
-	if err != nil {
+	if err == nil {
 		douyinId = douyinId[strings.Index(douyinId, "：")+3:]
 	}
 	return
@@ -71,7 +72,7 @@ func addDouyinUser(c context.Context) (name, douyinId, description, avatar strin
 			chromedp.AttributeValue(`//*[@id="sub-app"]/div/div[2]/div[1]/div[1]/img`, "src", &avatar, nil),
 		)
 	}, chromedp.Flag("headless", false))
-	if err != nil {
+	if err == nil {
 		douyinId = douyinId[strings.Index(douyinId, "：")+3:]
 	}
 	return
@@ -79,6 +80,10 @@ func addDouyinUser(c context.Context) (name, douyinId, description, avatar strin
 
 func manageDouyinUser(c context.Context, user model.DouyinUser) error {
 	return browse(c, func(ctx context.Context, cancel context.CancelFunc) error {
+		_ = message.Fetch(message.WS).Publish(message.Message{
+			Type:    0,
+			Content: fmt.Sprintf("正在管理 %s 抖音号", user.DouyinId),
+		})
 		err := chromedp.Run(ctx,
 			chromedp_ext.LoadCookies(user.Cookies),
 			chromedp.Navigate("https://creator.douyin.com/creator-micro/home"),
