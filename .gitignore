@@ -3,3 +3,4 @@
 /app/.idea
 /app/dist
 .DS_Store
+/kernel/data

@@ -31,7 +31,7 @@ func API(debug bool) http.Handler {
 		}
 
 	})
-
+	engine.GET("/message")
 	engine.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
@@ -47,7 +47,8 @@ func API(debug bool) http.Handler {
 			timeout.WithHandler(service.AddDouyinUser),
 		))
 	userGroup.POST("/douyin/:id/refresh", service.RefreshDouyinUser)
-	userGroup.POST("/douyin/:id/manager", service.RefreshDouyinUser)
+	userGroup.POST("/douyin/:id/manage", service.ManageDouyinUser)
+	userGroup.DELETE("/douyin/:id", service.DeleteDouyinUser)
 	userGroup.GET("/douyin", service.GetAllDouyinUser)
 	userGroup.PUT("/douyin/:id", service.UpdateDouyinUser)
 	engine.GET("/label", service.GetAllLabel)
