@@ -4,7 +4,7 @@
       <q-bar class="q-electron-drag bg-primary">
         <q-icon name="laptop_chromebook"/>
         <div>Matrix</div>
-
+        <q-badge rounded :color="healthStore.isOk ? 'green' : 'red'" style="transition: all 1s;"/>
         <q-space/>
 
         <q-btn dense flat icon="minimize" @click="handleMinimize"/>
@@ -53,9 +53,8 @@
       </q-list>
     </q-drawer>
 
-      <q-page-container>
-        <q-scroll-area :horizontal-thumb-style="{ opacity: '1' }"
-                       style="height: calc(100vh - 36px); width: 100%;">
+    <q-page-container>
+      <q-scroll-area style="height: calc(100vh - 36px); width: 100%;">
         <q-page class="q-my-md q-mx-md">
           <router-view/>
         </q-page>
@@ -67,9 +66,11 @@
 <script setup lang="ts">
 import { isElectron } from 'src/utils/action'
 import { ref } from 'vue'
+import { useHealthStore } from 'stores/application-store'
 
-const drawer = ref(true)
-const miniState = ref(false)
+const drawer = ref(false)
+const miniState = ref(true)
+const healthStore = useHealthStore()
 
 const menus = [
   { name: '创作集合', icon: 'video_library', path: '/' }

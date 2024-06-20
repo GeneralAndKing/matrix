@@ -1,9 +1,22 @@
 import axios from 'axios'
 import { LoadingBar, Notify } from 'quasar'
 
+const BASE_URL = 'http://localhost:8080'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   timeout: 10000
+})
+
+const healthApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 3000
+})
+
+LoadingBar.setDefaults({
+  hijackFilter (url) {
+    return url.endsWith('/health')
+  }
 })
 
 api.interceptors.request.use(config => {
@@ -59,4 +72,4 @@ api.interceptors.response.use(async (response) => {
   return Promise.reject(error)
 })
 
-export { axios, api }
+export { axios, api, healthApi }

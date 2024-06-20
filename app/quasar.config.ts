@@ -75,19 +75,19 @@ export default configure((/* ctx */) => {
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
-    devServer: {
-      // https: true
-      open: true, // opens browser window automatically
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8080',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      },
-      watch: {
-      }
-    },
+    // devServer: {
+    //   // https: true
+    //   open: true, // opens browser window automatically
+    //   proxy: {
+    //     '/api': {
+    //       target: 'http://localhost:8080',
+    //       changeOrigin: true,
+    //       rewrite: (path) => path.replace(/^\/api/, '')
+    //     }
+    //   },
+    //   watch: {
+    //   }
+    // },
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
       config: {},
