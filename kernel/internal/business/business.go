@@ -7,9 +7,9 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"kernel/internal/database"
+	"kernel/internal/message"
 	"kernel/internal/model"
 	"kernel/internal/model/enum"
-	"kernel/internal/ws"
 	"time"
 )
 
@@ -39,5 +39,8 @@ func publishDouyinCreationHandle(ctx context.Context) {
 	if err != nil {
 		zap.L().Warn("failed to publish douyinCreation", zap.Error(err))
 	}
-	ws.BroadcastToMessage(ws.MessageINFO, fmt.Sprintf("[%d] 正在发布作品 %s", douyinCreation.DouyinUserId, douyinCreation.Title))
+	_ = message.Publish(message.BUSINESS, message.Message{
+		Type:    message.INFO,
+		Content: fmt.Sprintf("[%d] 正在发布作品 %s", douyinCreation.DouyinUserId, douyinCreation.Title),
+	})
 }

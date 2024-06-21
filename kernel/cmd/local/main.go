@@ -9,8 +9,8 @@ import (
 	"kernel/internal/business"
 	"kernel/internal/config"
 	"kernel/internal/database"
+	"kernel/internal/message"
 	"kernel/internal/model"
-	"kernel/internal/ws"
 	"log"
 	"net/http"
 	"os"
@@ -51,6 +51,9 @@ func initDatabase(ctx context.Context) {
 	}
 
 }
+func initMessage(ctx context.Context) {
+	message.Init(ctx)
+}
 
 func initBusiness(ctx context.Context) {
 	business.Init(ctx)
@@ -75,20 +78,12 @@ func notifyExitSignal(ctx context.Context) {
 
 func initHttpServer(ctx context.Context) {
 	application := config.GetApplication()
-	ws.Init()
 	handler := api.API(ctx, application.Debug)
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: handler,
 	}
 
-	go func() {
-		zap.L().Info("start ws")
-		if err := ws.Open(); err != nil {
-			zap.L().Fatal("ws error", zap.Error(err))
-		}
-	}()
-	defer ws.Close()
 	go func() {
 		zap.L().Info("start server")
 		// service connections
@@ -107,6 +102,7 @@ func initHttpServer(ctx context.Context) {
 func main() {
 	ctx := context.Background()
 	initLog()
+	initMessage(ctx)
 	initDatabase(ctx)
 	initBusiness(ctx)
 	initHttpServer(ctx)

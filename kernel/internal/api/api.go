@@ -7,8 +7,8 @@ import (
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"kernel/internal/message"
 	"kernel/internal/service"
-	"kernel/internal/ws"
 	"net/http"
 	"time"
 )
@@ -34,9 +34,14 @@ func API(ctx context.Context, debug bool) http.Handler {
 		}
 
 	})
-	engine.GET("/socket.io/*any", gin.WrapH(ws.Handler()))
-	engine.POST("/socket.io/*any", gin.WrapH(ws.Handler()))
-
+	engine.GET("/message", service.Message)
+	engine.GET("/business", service.Business)
+	engine.GET("/message-test", func(c *gin.Context) {
+		message.Publish(message.WS, message.Message{
+			Type:    message.DEBUG,
+			Content: "我简单测试测试",
+		})
+	})
 	creationGroup := engine.Group("/creation")
 	creationGroup.GET("", service.GetAllCreation)
 	creationGroup.POST("", service.AddCreation)

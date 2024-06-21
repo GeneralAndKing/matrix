@@ -9,7 +9,6 @@ require (
 	github.com/gin-contrib/timeout v1.0.1
 	github.com/gin-contrib/zap v1.1.3
 	github.com/gin-gonic/gin v1.10.0
-	github.com/googollee/go-socket.io v1.7.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/mailru/easyjson v0.7.7
 	github.com/spf13/viper v1.19.0

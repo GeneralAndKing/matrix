@@ -27,10 +27,12 @@ func (w Creation) Output() dto.CreationOutput {
 
 type DouyinCreation struct {
 	gorm.Model
+
 	DouyinUser        DouyinUser
 	DouyinUserId      uint
 	Creation          Creation
 	CreationID        uint
+	VideoId           string                     `gorm:"type:varchar(255)"`
 	Title             string                     `gorm:"type:varchar(255);not null"`
 	Description       string                     `gorm:"type:text;not null"`
 	VideoCoverPath    string                     `gorm:"type:varchar(255)"`
