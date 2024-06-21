@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"kernel/internal/api"
+	"kernel/internal/business"
 	"kernel/internal/config"
 	"kernel/internal/database"
 	"kernel/internal/model"
@@ -49,6 +50,11 @@ func initDatabase(ctx context.Context) {
 		panic(err)
 	}
 
+}
+
+func initBusiness(ctx context.Context) {
+	business.Init(ctx)
+	zap.L().Info("start business")
 }
 
 func notifyExitSignal(ctx context.Context) {
@@ -102,6 +108,7 @@ func main() {
 	ctx := context.Background()
 	initLog()
 	initDatabase(ctx)
+	initBusiness(ctx)
 	initHttpServer(ctx)
 	_ = zap.L().Sync()
 }

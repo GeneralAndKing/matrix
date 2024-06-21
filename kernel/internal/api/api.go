@@ -40,6 +40,7 @@ func API(ctx context.Context, debug bool) http.Handler {
 	workGroup := engine.Group("/work")
 	workGroup.GET("", service.GetAllWork)
 	workGroup.POST("", service.AddWork)
+	workGroup.POST("/publish", service.PublishWork)
 
 	userGroup := engine.Group("/user")
 	userGroup.POST("/douyin",

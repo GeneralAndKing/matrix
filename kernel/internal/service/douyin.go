@@ -1,97 +1,21 @@
 package service
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"github.com/chromedp/chromedp"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"kernel/internal/browser"
 	"kernel/internal/database"
 	"kernel/internal/model"
 	"kernel/internal/model/dto"
-	"kernel/internal/ws"
 	"kernel/pkg/chromedp_ext"
 	"net/http"
 	"slices"
 	"strconv"
 	"strings"
-	"time"
 )
-
-func browse(c context.Context, fn func(ctx context.Context, cancel context.CancelFunc) error, options ...chromedp.ExecAllocatorOption) error {
-	var (
-		opts = append(chromedp.DefaultExecAllocatorOptions[:],
-			//chromedp.ExecPath("/Users/klein/Projects/matrix/app/dist/electron/Packaged/mac/Quasar App.app/Contents/MacOS/Quasar App"),
-			chromedp.Flag("headless", true),
-		)
-	)
-	opts = append(opts, options...)
-
-	// Create a context with options.
-	initialCtx, cancel := chromedp.NewExecAllocator(c, opts...)
-	defer cancel()
-	// Create new context off the initial context.
-	chromedpCtx, chromedpCancel := chromedp.NewContext(initialCtx, chromedp.WithLogf(zap.S().Infof))
-	return fn(chromedpCtx, chromedpCancel)
-}
-
-func refreshDouyinUser(c context.Context, user model.DouyinUser) (name, douyinId, description, avatar string, cookies []chromedp_ext.Cookie, err error) {
-	err = browse(c, func(ctx context.Context, cancel context.CancelFunc) error {
-		return chromedp.Run(ctx,
-			chromedp_ext.LoadCookies(user.Cookies),
-			chromedp.Navigate("https://creator.douyin.com/creator-micro/home"),
-			//等待10秒 如果超时则需要重新登陆
-			chromedp_ext.WithTimeOut(10*time.Second,
-				chromedp.Tasks{chromedp.WaitVisible(`//*[@id="douyin-creator-master-side-upload"]`)}),
-			chromedp_ext.SaveCookies(&cookies),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]`, &name),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[4]`, &description),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[3]`, &douyinId),
-			chromedp.AttributeValue(`//*[@id="sub-app"]/div/div[2]/div[1]/div[1]/img`, "src", &avatar, nil),
-		)
-	})
-	if err == nil {
-		douyinId = douyinId[strings.Index(douyinId, "：")+3:]
-	}
-	return
-
-}
-
-func addDouyinUser(c context.Context) (name, douyinId, description, avatar string, cookies []chromedp_ext.Cookie, err error) {
-	err = browse(c, func(ctx context.Context, cancel context.CancelFunc) error {
-		return chromedp.Run(ctx,
-			chromedp.Navigate("https://creator.douyin.com"),
-			//等待抖音登陆成功
-			chromedp.WaitVisible(`//*[@id="douyin-creator-master-side-upload"]`),
-			chromedp_ext.SaveCookies(&cookies),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]`, &name),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[4]`, &description),
-			chromedp.Text(`//*[@id="sub-app"]/div/div[2]/div[1]/div[2]/div[1]/div[3]`, &douyinId),
-			chromedp.AttributeValue(`//*[@id="sub-app"]/div/div[2]/div[1]/div[1]/img`, "src", &avatar, nil),
-		)
-	}, chromedp.Flag("headless", false))
-	if err == nil {
-		douyinId = douyinId[strings.Index(douyinId, "：")+3:]
-	}
-	return
-}
-
-func manageDouyinUser(c context.Context, user model.DouyinUser) error {
-	return browse(c, func(ctx context.Context, cancel context.CancelFunc) error {
-		ws.BroadcastToMessage(ws.MessageINFO, fmt.Sprintf("正在管理 %s 抖音", user.DouyinId))
-		err := chromedp.Run(ctx,
-			chromedp_ext.LoadCookies(user.Cookies),
-			chromedp.Navigate("https://creator.douyin.com/creator-micro/home"),
-			chromedp.Sleep(24*time.Hour),
-		)
-		if err != nil && errors.Is(context.Canceled, err) {
-			return nil
-		}
-		return err
-	}, chromedp.Flag("headless", false))
-}
 
 func AddDouyinUser(c *gin.Context) {
 
@@ -105,7 +29,7 @@ func AddDouyinUser(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	name, douyinId, description, avatar, cookies, err := addDouyinUser(c)
+	name, douyinId, description, avatar, cookies, err := browser.AddDouyinUser(c)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to add douyin user: %w", err))
 		return
@@ -172,10 +96,10 @@ func RefreshDouyinUser(c *gin.Context) {
 		if tx := db.Preload("Labels").Find(&user, id); tx.Error != nil {
 			return fmt.Errorf("failed to find douyin user: %w", tx.Error)
 		}
-		name, douyinId, description, avatar, cookies, refreshErr = refreshDouyinUser(c, user)
+		name, douyinId, description, avatar, cookies, refreshErr = browser.RefreshDouyinUser(c, user)
 		if refreshErr != nil {
 			zap.L().Warn("failed to refresh douyin user, re login", zap.Error(refreshErr), zap.Uint("id", user.ID))
-			name, douyinId, description, avatar, cookies, loginErr = addDouyinUser(c)
+			name, douyinId, description, avatar, cookies, loginErr = browser.AddDouyinUser(c)
 			if loginErr != nil {
 				finalErr := errors.Join(refreshErr, loginErr)
 				zap.L().Warn("failed to login douyin user", zap.Error(finalErr), zap.Uint("id", user.ID))
@@ -288,13 +212,13 @@ func ManageDouyinUser(c *gin.Context) {
 		if tx := db.Find(&user, id); tx.Error != nil {
 			return fmt.Errorf("failed to found douyin user: %w", tx.Error)
 		}
-		return manageDouyinUser(c, user)
+		return browser.ManageDouyinUser(c, user)
 	})
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
+	c.AbortWithStatus(http.StatusNoContent)
 }
 
 func DeleteDouyinUser(c *gin.Context) {
@@ -314,6 +238,6 @@ func DeleteDouyinUser(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
+	c.AbortWithStatus(http.StatusNoContent)
 
 }
