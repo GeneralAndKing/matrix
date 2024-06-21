@@ -11,8 +11,8 @@ import (
 	"kernel/internal/database"
 	"kernel/internal/model"
 	"kernel/internal/model/dto"
+	"kernel/internal/ws"
 	"kernel/pkg/chromedp_ext"
-	"kernel/pkg/message"
 	"net/http"
 	"slices"
 	"strconv"
@@ -80,10 +80,7 @@ func addDouyinUser(c context.Context) (name, douyinId, description, avatar strin
 
 func manageDouyinUser(c context.Context, user model.DouyinUser) error {
 	return browse(c, func(ctx context.Context, cancel context.CancelFunc) error {
-		_ = message.Fetch(message.WS).Publish(message.Message{
-			Type:    0,
-			Content: fmt.Sprintf("正在管理 %s 抖音号", user.DouyinId),
-		})
+		ws.BroadcastToMessage(ws.MessageINFO, fmt.Sprintf("正在管理 %s 抖音", user.DouyinId))
 		err := chromedp.Run(ctx,
 			chromedp_ext.LoadCookies(user.Cookies),
 			chromedp.Navigate("https://creator.douyin.com/creator-micro/home"),

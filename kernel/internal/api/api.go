@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"kernel/internal/service"
-	"kernel/pkg/message"
+	"kernel/internal/ws"
 	"net/http"
 	"time"
 )
@@ -23,18 +23,19 @@ func API(ctx context.Context, debug bool) http.Handler {
 	engine.Use(ginzap.Ginzap(zap.L(), time.RFC3339, true))
 	engine.Use(ginzap.RecoveryWithZap(zap.L(), true))
 	engine.Use(cors.Default())
+
 	engine.Use(func(ctx *gin.Context) {
 		ctx.Next()
 		if ctx.Errors != nil {
 			ctx.JSON(ctx.Writer.Status(), gin.H{
-				"error":   http.StatusText(ctx.Writer.Status()),
-				"message": ctx.Errors.String(),
+				"error": http.StatusText(ctx.Writer.Status()),
+				"ws":    ctx.Errors.String(),
 			})
 		}
 
 	})
-	message.InitAndRegister(ctx, message.WS)
-	engine.GET("/message", service.Message)
+	engine.GET("/socket.io/*any", gin.WrapH(ws.Handler()))
+	engine.POST("/socket.io/*any", gin.WrapH(ws.Handler()))
 
 	workGroup := engine.Group("/work")
 	workGroup.GET("", service.GetAllWork)
