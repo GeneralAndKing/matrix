@@ -12,29 +12,29 @@ import (
 	"strconv"
 )
 
-func GetAllWork(ctx *gin.Context) {
+func GetAllCreation(ctx *gin.Context) {
 	var (
-		works   []model.Work
-		outputs []dto.WorkOutput
+		creations []model.Creation
+		outputs   []dto.CreationOutput
 	)
 
 	if err := database.Sqlite3Transaction(ctx, func(db *gorm.DB) error {
-		if result := db.Find(&works); result.Error != nil {
-			return fmt.Errorf("failed to found works: %w", result.Error)
+		if result := db.Find(&creations); result.Error != nil {
+			return fmt.Errorf("failed to found creations: %w", result.Error)
 		}
 		return nil
 	}); err != nil {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 	}
-	for _, work := range works {
-		outputs = append(outputs, work.Output())
+	for _, creation := range creations {
+		outputs = append(outputs, creation.Output())
 	}
 	ctx.JSON(http.StatusOK, outputs)
 }
 
-func AddWork(ctx *gin.Context) {
+func AddCreation(ctx *gin.Context) {
 	var (
-		input dto.AddWorkInput
+		input dto.AddCreationInput
 	)
 
 	err := ctx.ShouldBindJSON(&input)
@@ -42,15 +42,15 @@ func AddWork(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	work := model.Work{
+	creation := model.Creation{
 		Type:        input.Type,
 		Title:       input.Title,
 		Description: input.Description,
 		Paths:       input.Paths,
 	}
 	err = database.Sqlite3Transaction(ctx, func(db *gorm.DB) error {
-		if result := db.Save(&work); result.Error != nil {
-			return fmt.Errorf("failed to save work: %w", result.Error)
+		if result := db.Save(&creation); result.Error != nil {
+			return fmt.Errorf("failed to save creation: %w", result.Error)
 		}
 		return nil
 	})
@@ -58,37 +58,37 @@ func AddWork(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, work)
+	ctx.JSON(http.StatusOK, creation)
 }
 
-func PublishWork(c *gin.Context) {
+func PublishCreation(c *gin.Context) {
 	var (
-		work  model.Work
-		input dto.PublishWorkInput
+		creation model.Creation
+		input    dto.PublishCreationInput
 	)
 
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 0)
 	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("work id should be uint type: %w", err))
+		_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("creation id should be uint type: %w", err))
 		return
 	}
 	if err = c.ShouldBindJSON(&input); err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 	}
 	err = database.Sqlite3Transaction(c, func(db *gorm.DB) error {
-		if tx := db.Find(&work, id); tx.Error != nil {
-			return fmt.Errorf("failed to find work: %w", tx.Error)
+		if tx := db.Find(&creation, id); tx.Error != nil {
+			return fmt.Errorf("failed to find creation: %w", tx.Error)
 		}
 		for _, userInput := range input.DouyinUserInputs {
 			var douyinUser model.DouyinUser
 			if userTx := db.Find(&douyinUser, userInput.ID); userTx.Error != nil {
 				return fmt.Errorf("failed to find user %s: %w", userInput.ID, userTx.Error)
 			}
-			douyinWork := model.DouyinWork{
+			douyinCreation := model.DouyinCreation{
 				DouyinUser:        douyinUser,
-				Work:              work,
-				WorkID:            work.ID,
+				Creation:          creation,
+				CreationID:        creation.ID,
 				Title:             userInput.Title,
 				Description:       userInput.Description,
 				VideoCoverPath:    userInput.VideoCoverPath,
@@ -101,10 +101,10 @@ func PublishWork(c *gin.Context) {
 				AllowedToSave:     userInput.AllowedToSave,
 				WhoCanWatch:       userInput.WhoCanWatch,
 				ReleaseTime:       userInput.ReleaseTime,
-				Status:            enum.PendingWorkStatus,
+				Status:            enum.PendingCreationStatus,
 			}
-			if douyinWorkTx := db.Save(&douyinWork); douyinWorkTx.Error != nil {
-				return fmt.Errorf("failed to save douyin work: %w", douyinWorkTx.Error)
+			if douyinCreationTx := db.Save(&douyinCreation); douyinCreationTx.Error != nil {
+				return fmt.Errorf("failed to save douyin creation: %w", douyinCreationTx.Error)
 			}
 		}
 		return nil

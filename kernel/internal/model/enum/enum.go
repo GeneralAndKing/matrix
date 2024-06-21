@@ -1,16 +1,16 @@
 package enum
 
-type Work uint
-type PublishWorkStatus uint
+type Creation uint
+type PublishCreationStatus uint
 
 const (
-	PendingWorkStatus PublishWorkStatus = iota
-	RunningWorkStatus
-	CompletedWorkStatus
-	FailedWorkStatus
+	PendingCreationStatus PublishCreationStatus = iota
+	RunningCreationStatus
+	CompletedCreationStatus
+	FailedCreationStatus
 )
 
 const (
-	Video Work = iota + 1
+	Video Creation = iota + 1
 	Teletext
 )

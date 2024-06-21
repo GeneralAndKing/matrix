@@ -21,23 +21,23 @@ func Init(ctx context.Context) {
 	}()
 }
 
-func publishDouyinWorkHandle(ctx context.Context) {
-	var douyinWork model.DouyinWork
+func publishDouyinCreationHandle(ctx context.Context) {
+	var douyinCreation model.DouyinCreation
 	err := database.Sqlite3Transaction(ctx, func(db *gorm.DB) error {
-		if tx := db.Where("status = ? ", enum.PendingWorkStatus).Order("created_at").First(&douyinWork); tx.Error != nil {
+		if tx := db.Where("status = ? ", enum.PendingCreationStatus).Order("created_at").First(&douyinCreation); tx.Error != nil {
 			if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 				return nil
 			}
-			return fmt.Errorf("failed to found pending douyinWork")
+			return fmt.Errorf("failed to found pending douyinCreation")
 		}
-		douyinWork.Status = enum.RunningWorkStatus
-		if tx := db.Save(&douyinWork); tx.Error != nil {
-			return fmt.Errorf("failed to save running douyinWork")
+		douyinCreation.Status = enum.RunningCreationStatus
+		if tx := db.Save(&douyinCreation); tx.Error != nil {
+			return fmt.Errorf("failed to save running douyin creation")
 		}
 		return nil
 	})
 	if err != nil {
-		zap.L().Warn("failed to publish douyinWork", zap.Error(err))
+		zap.L().Warn("failed to publish douyinCreation", zap.Error(err))
 	}
-	ws.BroadcastToMessage(ws.MessageINFO, fmt.Sprintf("[%d] 正在发布作品 %s", douyinWork.DouyinUserId, douyinWork.Title))
+	ws.BroadcastToMessage(ws.MessageINFO, fmt.Sprintf("[%d] 正在发布作品 %s", douyinCreation.DouyinUserId, douyinCreation.Title))
 }

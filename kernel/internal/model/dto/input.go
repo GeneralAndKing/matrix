@@ -5,20 +5,20 @@ import (
 	"time"
 )
 
-type AddWorkInput struct {
-	Type        enum.Work `json:"type" binding:"min=1,max=2"`
-	Title       string    `json:"title" binding:"required"`
-	Description string    `json:"description" binding:"required"`
-	Paths       []string  `json:"paths" binding:"required"`
+type AddCreationInput struct {
+	Type        enum.Creation `json:"type" binding:"min=1,max=2"`
+	Title       string        `json:"title" binding:"required"`
+	Description string        `json:"description" binding:"required"`
+	Paths       []string      `json:"paths" binding:"required"`
 }
 
 type AddDouyinUserInput []string
 
-type PublishWorkInput struct {
-	DouyinUserInputs []PublishDouyinWorkInput `json:"douyin" binding:"required"`
+type PublishCreationInput struct {
+	DouyinUserInputs []PublishDouyinCreationInput `json:"douyin" binding:"required"`
 }
 
-type PublishDouyinWorkInput struct {
+type PublishDouyinCreationInput struct {
 	ID                string    `json:"id" binding:"required"`
 	Title             string    `json:"title" binding:"required"`
 	Description       string    `json:"description" binding:"required"`

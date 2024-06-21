@@ -157,7 +157,7 @@ func SaveCookiesTo(path string) chromedp.ActionFunc {
 // SendKeys does the same as chromedp.SendKeys excepts it randomly waits 100-500ms
 // between sending key presses.
 func SendKeys(sel any, v string, opts ...chromedp.QueryOption) chromedp.ActionFunc {
-	return chromedp.ActionFunc(func(ctx context.Context) error {
+	return func(ctx context.Context) error {
 		for _, key := range v {
 			if err := chromedp.SendKeys(sel, string(key), opts...).Do(ctx); err != nil {
 				return err
@@ -167,7 +167,7 @@ func SendKeys(sel any, v string, opts ...chromedp.QueryOption) chromedp.ActionFu
 		}
 
 		return nil
-	})
+	}
 }
 
 var (

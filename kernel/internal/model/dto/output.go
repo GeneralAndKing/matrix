@@ -8,12 +8,12 @@ import (
 
 type LabelOutput string
 
-type WorkOutput struct {
+type CreationOutput struct {
 	gorm.Model
-	Type        enum.Work `json:"type"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Paths       []string  `json:"paths"`
+	Type        enum.Creation `json:"type"`
+	Title       string        `json:"title"`
+	Description string        `json:"description"`
+	Paths       []string      `json:"paths"`
 }
 
 type DouyinUserOutput struct {
@@ -26,21 +26,21 @@ type DouyinUserOutput struct {
 	Expired     bool          `json:"expired"`
 }
 
-type DouyinWorkOutput struct {
+type DouyinCreationOutput struct {
 	gorm.Model
-	DouyinUserId      uint                   `json:"douyinUserId"`
-	WorkID            uint                   `json:"workId"`
-	Title             string                 `json:"title"`
-	Description       string                 `json:"description"`
-	VideoCoverPath    string                 `json:"videoCoverPath"`
-	Location          string                 `json:"location"`
-	Paster            string                 `json:"paster"`
-	CollectionName    string                 `json:"collectionName"`
-	CollectionNum     int                    `json:"collectionNum"`
-	AssociatedHotspot string                 `json:"associatedHotspot"`
-	SyncToToutiao     bool                   `json:"syncToToutiao"`
-	AllowedToSave     bool                   `json:"allowedToSave"`
-	WhoCanWatch       uint                   `json:"whoCanWatch"`
-	ReleaseTime       time.Time              `json:"releaseTime"`
-	Status            enum.PublishWorkStatus `json:"status"`
+	DouyinUserId      uint                       `json:"douyinUserId"`
+	CreationID        uint                       `json:"creationId"`
+	Title             string                     `json:"title"`
+	Description       string                     `json:"description"`
+	VideoCoverPath    string                     `json:"videoCoverPath"`
+	Location          string                     `json:"location"`
+	Paster            string                     `json:"paster"`
+	CollectionName    string                     `json:"collectionName"`
+	CollectionNum     int                        `json:"collectionNum"`
+	AssociatedHotspot string                     `json:"associatedHotspot"`
+	SyncToToutiao     bool                       `json:"syncToToutiao"`
+	AllowedToSave     bool                       `json:"allowedToSave"`
+	WhoCanWatch       uint                       `json:"whoCanWatch"`
+	ReleaseTime       time.Time                  `json:"releaseTime"`
+	Status            enum.PublishCreationStatus `json:"status"`
 }

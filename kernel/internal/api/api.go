@@ -37,10 +37,10 @@ func API(ctx context.Context, debug bool) http.Handler {
 	engine.GET("/socket.io/*any", gin.WrapH(ws.Handler()))
 	engine.POST("/socket.io/*any", gin.WrapH(ws.Handler()))
 
-	workGroup := engine.Group("/work")
-	workGroup.GET("", service.GetAllWork)
-	workGroup.POST("", service.AddWork)
-	workGroup.POST("/publish", service.PublishWork)
+	creationGroup := engine.Group("/creation")
+	creationGroup.GET("", service.GetAllCreation)
+	creationGroup.POST("", service.AddCreation)
+	creationGroup.POST("/publish", service.PublishCreation)
 
 	userGroup := engine.Group("/user")
 	userGroup.POST("/douyin",
