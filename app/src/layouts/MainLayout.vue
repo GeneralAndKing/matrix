@@ -27,7 +27,7 @@
     >
       <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: '0' }" style="flex: 1">
         <q-list padding>
-          <q-item v-for="item in menus" :key="item.name" :to="item.path" exact clickable v-ripple>
+          <q-item v-for="item in menus" :key="item.name" :exact="item.exact" :to="item.path"  clickable v-ripple>
             <q-item-section avatar>
               <q-icon :name="item.icon"/>
             </q-item-section>
@@ -65,15 +65,17 @@
 
 <script setup lang="ts">
 import { isElectron } from 'src/utils/action'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useHealthStore } from 'stores/application-store'
+import { useQuasar } from 'quasar'
 
 const drawer = ref(false)
 const miniState = ref(true)
 const healthStore = useHealthStore()
+const $q = useQuasar()
 
 const menus = [
-  { name: '创作集合', icon: 'video_library', path: '/' }
+  { name: '创作集合', icon: 'video_library', path: '/creation', exact: false }
 ]
 
 const handleMinimize = () => {
@@ -93,4 +95,9 @@ const handleCloseApp = () => {
     window.WindowsApi.close()
   }
 }
+
+onMounted(() => {
+  // $q.localStorage.set('test', 'test')
+  console.log($q.localStorage.getItem('test'))
+})
 </script>

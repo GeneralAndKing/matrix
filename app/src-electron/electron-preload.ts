@@ -29,6 +29,7 @@
  */
 import { BrowserWindow } from '@electron/remote'
 import { contextBridge } from 'electron'
+import * as fs from 'node:fs'
 
 contextBridge.exposeInMainWorld('WindowsApi', {
   minimize: () => {
@@ -45,5 +46,17 @@ contextBridge.exposeInMainWorld('WindowsApi', {
   },
   close: () => {
     BrowserWindow.getFocusedWindow()?.close()
+  }
+})
+
+contextBridge.exposeInMainWorld('FileApi', {
+  filePathListExist: (filePathList: string[]): Record<string, boolean> => {
+    return filePathList.map(path => ({
+      path,
+      exist: fs.existsSync(path)
+    })).reduce((acc: Record<string, boolean>, file) => {
+      acc[file.path] = file.exist
+      return acc
+    }, {})
   }
 })

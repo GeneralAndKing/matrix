@@ -5,12 +5,19 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '', redirect: '/creation' },
+      {
+        path: 'creation',
+        children: [
+          { path: '', name: 'CreationList', component: () => import('pages/creation/list/CreationListPage.vue') },
+          { path: 'information/:id', name: 'CreationInformation', component: () => import('pages/creation/information/InformationPage.vue') }
+        ]
+      },
       {
         path: 'account',
         component: () => import('pages/account/AccountPage.vue'),
         children: [
-          { path: '', component: () => import('pages/account/DouyinAccountPage.vue') }
+          { path: '', component: () => import('pages/account/DouYinAccountPage.vue') }
         ]
       }
     ]

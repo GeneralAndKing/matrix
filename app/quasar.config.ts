@@ -109,7 +109,8 @@ export default configure((/* ctx */) => {
         'Dialog',
         'Loading',
         'LoadingBar',
-        'Notify'
+        'Notify',
+        'LocalStorage'
       ]
     },
 

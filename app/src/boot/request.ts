@@ -61,7 +61,7 @@ api.interceptors.response.use(async (response) => {
     return undefined
   }
   return data
-}, function (error) {
+}, (error) => {
   LoadingBar.stop()
   Notify.create({
     type: 'negative',

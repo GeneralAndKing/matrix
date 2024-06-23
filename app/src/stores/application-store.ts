@@ -1,25 +1,32 @@
 import { defineStore } from 'pinia'
-import { HealthApi } from 'src/api/health'
 import { onMounted, ref } from 'vue'
-import { useInterval } from 'quasar'
+import { businessSocket, messageSocket } from 'boot/socket'
 
-export const useHealthStore = defineStore('counter', () => {
+export const useHealthStore = defineStore('health', () => {
   const isOk = ref(false)
 
-  const {
-    registerInterval
-  } = useInterval()
-
   const handleHealth = () => {
-    HealthApi.ping()
-      .then((response) => {
-        isOk.value = response.data === 'pong'
-      })
-      .catch(() => { isOk.value = false })
+    messageSocket.onopen = () => {
+      isOk.value = true
+    }
+    messageSocket.onclose = () => {
+      isOk.value = false
+    }
+    messageSocket.onerror = () => {
+      console.log('error')
+    }
+    messageSocket.onmessage = () => {
+      console.log('message')
+    }
+    businessSocket.onopen = () => {
+      isOk.value = true
+    }
+    businessSocket.onclose = () => {
+      isOk.value = false
+    }
   }
   onMounted(() => {
     handleHealth()
-    registerInterval(handleHealth, 2000)
   })
   return {
     isOk

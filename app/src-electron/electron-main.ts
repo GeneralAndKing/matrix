@@ -28,6 +28,7 @@ function createWindow () {
     webPreferences: {
       sandbox: false,
       contextIsolation: true,
+      webSecurity: false,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(
         currentDir,

@@ -4,8 +4,13 @@ export interface WindowsApi {
   close: () => void
 }
 
+export interface FileApi {
+  filePathListExist: (filePathList: string[]) => Record<string, boolean>
+}
+
 declare global {
   interface Window {
-    WindowsApi: WindowsApi
+    WindowsApi: WindowsApi,
+    FileApi: FileApi
   }
 }
