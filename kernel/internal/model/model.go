@@ -9,10 +9,10 @@ import (
 type GenericArray[T any] []T
 
 func (g *GenericArray[T]) Scan(value interface{}) error {
-	return json.Unmarshal(value.([]byte), &g)
+	return json.Unmarshal(value.([]byte), g)
 }
 
-func (g *GenericArray[T]) Value() (driver.Value, error) {
+func (g GenericArray[T]) Value() (driver.Value, error) {
 	return json.Marshal(g)
 
 }
