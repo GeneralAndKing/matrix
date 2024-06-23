@@ -1,8 +1,9 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, session } from 'electron'
 import path from 'path'
 import os from 'os'
 import { fileURLToPath } from 'url'
 import { enable, initialize } from '@electron/remote/main/index.js'
+import * as fs from 'node:fs'
 
 // https://quasar.dev/quasar-cli-vite/developing-electron-apps/frameless-electron-window#setting-frameless-window
 initialize()
@@ -12,11 +13,9 @@ const platform = process.platform || os.platform()
 const currentDir = fileURLToPath(new URL('.', import.meta.url))
 
 let mainWindow: BrowserWindow | undefined
+const appDir = path.dirname(app.getAppPath())
 
-function createWindow () {
-  /**
-   * Initial window options
-   */
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
     minHeight: 600,
@@ -39,7 +38,7 @@ function createWindow () {
 
   enable(mainWindow.webContents)
   if (process.env.DEV) {
-    void mainWindow.loadURL(process.env.APP_URL)
+    void mainWindow.loadURL('https://fingerprintjs.github.io/fingerprintjs/')
   } else {
     void mainWindow.loadFile('index.html')
   }
@@ -50,16 +49,54 @@ function createWindow () {
   } else {
     // we're on production; no access to devtools pls
     mainWindow.webContents.on('devtools-opened', () => {
-      mainWindow?.webContents.closeDevTools()
+      // mainWindow?.webContents.closeDevTools()
     })
   }
 
   mainWindow.on('closed', () => {
     mainWindow = undefined
   })
+  mainWindow.webContents.on('did-finish-load', () => {
+    // mainWindow?.webContents.executeJavaScript("\n" +
+    //   "const codeToInject = 'Object.defineProperty(navigator,\"language\", {" +
+    //   "  get: function () { return \"zh-Hans-CN\"; }, " +
+    //   "  set: function (a) {}" +
+    //   " });';" +
+    //   "const script = document.createElement('script');" +
+    //   "script.appendChild(document.createTextNode(codeToInject));" +
+    //   "(document.head || document.documentElement).appendChild(script);" +
+    //   "script.parentNode?.removeChild(script);" +
+    //   "console.log('hello');" +
+    //   "alert('test')"
+    // )
+
+    // mainWindow?.webContents.debugger.sendCommand('Page.addScriptToEvaluateOnNewDocument', {
+    //   'source': 'console.log("hello!")'
+    // })
+    // mainWindow?.webContents.debugger.sendCommand('Browser.getVersion')
+    //   .then(result => {
+    //     console.log('Browser version:', result);
+    //   })
+    //   .catch(error => {
+    //     console.error('Failed to get browser version:', error);
+    //   });
+  })
+
+  // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+  //   details.requestHeaders['User-Agent'] = 'Mozilla/8.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+  //   callback({ requestHeaders: details.requestHeaders })
+  // })
+  // mainWindow?.webContents.debugger.on('message', (event, method, params) => {
+  //   console.log(event, method, params)
+  // })
+  // mainWindow?.webContents.debugger.on('detach', (event, reason) => {
+  //   console.log('Debugger detached due to: ', event, reason);
+  // })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(async () => {
+  createWindow()
+})
 
 app.on('window-all-closed', () => {
   if (platform !== 'darwin') {
