@@ -61,6 +61,39 @@ func AddCreation(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, creation)
 }
 
+func GetCreation(c *gin.Context) {
+	var (
+		creation        model.Creation
+		douyinCreations []model.DouyinCreation
+		output          dto.CreationDetailOutput
+	)
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 0)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("creation id should be uint type: %w", err))
+		return
+	}
+	err = database.Sqlite3Transaction(c, func(db *gorm.DB) error {
+		if tx := db.Find(&creation, id); tx.Error != nil {
+			return fmt.Errorf("failed to found creation: %w", tx.Error)
+		}
+		if douyinTx := db.Find(&douyinCreations).Where("creation_id = ?", id); douyinTx.Error != nil {
+			return fmt.Errorf("failed to found douyin creations: %w", douyinTx.Error)
+		}
+		return nil
+	})
+	if err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	output.Creation = creation.Output()
+	output.Douyin = make([]dto.DouyinCreationOutput, 0)
+	for _, douyinCreation := range douyinCreations {
+		output.Douyin = append(output.Douyin, douyinCreation.Output())
+	}
+	c.JSON(http.StatusOK, output)
+}
+
 func PublishCreation(c *gin.Context) {
 	var (
 		creation model.Creation
@@ -82,7 +115,7 @@ func PublishCreation(c *gin.Context) {
 		}
 		for _, userInput := range input.DouyinUserInputs {
 			var douyinUser model.DouyinUser
-			if userTx := db.Find(&douyinUser, userInput.ID); userTx.Error != nil {
+			if userTx := db.Preload("Labels").Find(&douyinUser, userInput.ID); userTx.Error != nil {
 				return fmt.Errorf("failed to find user %s: %w", userInput.ID, userTx.Error)
 			}
 			douyinCreation := model.DouyinCreation{
@@ -114,4 +147,26 @@ func PublishCreation(c *gin.Context) {
 		return
 	}
 	c.AbortWithStatus(http.StatusNoContent)
+}
+
+func GetDouyinCreation(c *gin.Context) {
+	var douyinCreation model.DouyinCreation
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 0)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("creation id should be uint type: %w", err))
+		return
+	}
+	err = database.Sqlite3Transaction(c, func(db *gorm.DB) error {
+
+		if douyinTx := db.Find(&douyinCreation, id); douyinTx.Error != nil {
+			return fmt.Errorf("failed to found douyin creation: %w", douyinTx.Error)
+		}
+		return nil
+	})
+	if err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, douyinCreation.Output())
 }

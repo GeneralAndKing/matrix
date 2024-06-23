@@ -4,7 +4,7 @@ type Creation uint
 type PublishCreationStatus uint
 
 const (
-	PendingCreationStatus PublishCreationStatus = iota
+	PendingCreationStatus PublishCreationStatus = iota + 1
 	RunningCreationStatus
 	CompletedCreationStatus
 	FailedCreationStatus

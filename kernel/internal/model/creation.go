@@ -9,10 +9,10 @@ import (
 
 type Creation struct {
 	gorm.Model
-	Type        enum.Creation `gorm:"type:tinyint(1)"`
-	Title       string        `gorm:"type:varchar(255);not null"`
-	Description string        `gorm:"type:text;not null"`
-	Paths       []string      `gorm:"type:text[]"`
+	Type        enum.Creation        `gorm:"type:tinyint(1)"`
+	Title       string               `gorm:"type:varchar(255);not null"`
+	Description string               `gorm:"type:text;not null"`
+	Paths       GenericArray[string] `gorm:"type:text"`
 }
 
 func (w Creation) Output() dto.CreationOutput {
@@ -47,4 +47,25 @@ type DouyinCreation struct {
 	ReleaseTime       time.Time                  `gorm:"type:datetime;not null"`
 	Status            enum.PublishCreationStatus `gorm:"type:integer;not null"`
 	Message           string                     `gorm:"type:text;not null"`
+}
+
+func (c DouyinCreation) Output() dto.DouyinCreationOutput {
+	return dto.DouyinCreationOutput{
+		Model:             c.Model,
+		DouyinUserId:      c.DouyinUserId,
+		CreationID:        c.CreationID,
+		Title:             c.Title,
+		Description:       c.Description,
+		VideoCoverPath:    c.VideoCoverPath,
+		Location:          c.Location,
+		Paster:            c.Paster,
+		CollectionName:    c.CollectionName,
+		CollectionNum:     c.CollectionNum,
+		AssociatedHotspot: c.AssociatedHotspot,
+		SyncToToutiao:     c.SyncToToutiao,
+		AllowedToSave:     c.AllowedToSave,
+		WhoCanWatch:       c.WhoCanWatch,
+		ReleaseTime:       c.ReleaseTime,
+		Status:            c.Status,
+	}
 }

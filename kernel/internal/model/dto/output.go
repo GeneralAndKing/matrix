@@ -44,3 +44,8 @@ type DouyinCreationOutput struct {
 	ReleaseTime       time.Time                  `json:"releaseTime"`
 	Status            enum.PublishCreationStatus `json:"status"`
 }
+
+type CreationDetailOutput struct {
+	Creation CreationOutput         `json:"creation"`
+	Douyin   []DouyinCreationOutput `json:"douyin"`
+}

@@ -7,7 +7,6 @@ import (
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"kernel/internal/message"
 	"kernel/internal/service"
 	"net/http"
 	"time"
@@ -36,15 +35,11 @@ func API(ctx context.Context, debug bool) http.Handler {
 	})
 	engine.GET("/message", service.Message)
 	engine.GET("/business", service.Business)
-	engine.GET("/message-test", func(c *gin.Context) {
-		message.Publish(message.WS, message.Message{
-			Type:    message.DEBUG,
-			Content: "我简单测试测试",
-		})
-	})
 	creationGroup := engine.Group("/creation")
 	creationGroup.GET("", service.GetAllCreation)
 	creationGroup.POST("", service.AddCreation)
+	creationGroup.GET("/:id", service.GetCreation)
+	creationGroup.GET("/douyin/:id", service.GetDouyinCreation)
 	creationGroup.POST("/publish", service.PublishCreation)
 
 	userGroup := engine.Group("/user")
