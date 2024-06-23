@@ -38,6 +38,7 @@ func API(ctx context.Context, debug bool) http.Handler {
 	creationGroup := engine.Group("/creation")
 	creationGroup.GET("", service.GetAllCreation)
 	creationGroup.POST("", service.AddCreation)
+	creationGroup.PUT("/:id", service.UpdateCreation)
 	creationGroup.GET("/:id", service.GetCreation)
 	creationGroup.GET("/douyin/:id", service.GetDouyinCreation)
 	creationGroup.POST("/publish", service.PublishCreation)

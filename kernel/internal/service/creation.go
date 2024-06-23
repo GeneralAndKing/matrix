@@ -170,3 +170,37 @@ func GetDouyinCreation(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, douyinCreation.Output())
 }
+
+func UpdateCreation(c *gin.Context) {
+	var (
+		input    dto.AddCreationInput
+		creation model.Creation
+	)
+
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 0)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("creation id should be uint type: %w", err))
+		return
+	}
+	if err = c.ShouldBindJSON(&input); err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+	}
+	err = database.Sqlite3Transaction(c, func(db *gorm.DB) error {
+		if tx := db.Find(&creation, id); tx.Error != nil {
+			return fmt.Errorf("failed to found creation: %w", tx.Error)
+		}
+		creation.Title = input.Title
+		creation.Description = input.Description
+		creation.Paths = input.Paths
+		if result := db.Save(&creation); result.Error != nil {
+			return fmt.Errorf("failed to save creation: %w", result.Error)
+		}
+		return nil
+	})
+	if err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, creation)
+}
