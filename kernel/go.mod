@@ -9,6 +9,7 @@ require (
 	github.com/gin-contrib/timeout v1.0.1
 	github.com/gin-contrib/zap v1.1.3
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/mailru/easyjson v0.7.7
 	github.com/spf13/viper v1.19.0
@@ -33,8 +34,6 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
-	github.com/gomodule/redigo v1.8.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

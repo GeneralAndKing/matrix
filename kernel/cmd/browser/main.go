@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/chromedp/chromedp"
 	"kernel/pkg/chromedp_ext"
+	"kernel/pkg/external_api/douyin"
 	"log"
 	"os"
 	"time"
@@ -21,6 +22,7 @@ type Cookie struct {
 }
 
 func main() {
+	douyin.FetchChallengeSug("做法")
 	var (
 	//qrXpath = `//div[starts-with(@class,"qrcode-image")]/img[1]`
 	//refreshXpath = `//div[starts-with(@class,"qrcode-image")]/div`

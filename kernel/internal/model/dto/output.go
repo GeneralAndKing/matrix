@@ -40,7 +40,7 @@ type DouyinCreationOutput struct {
 	AssociatedHotspot string                     `json:"associatedHotspot"`
 	SyncToToutiao     bool                       `json:"syncToToutiao"`
 	AllowedToSave     bool                       `json:"allowedToSave"`
-	WhoCanWatch       uint                       `json:"whoCanWatch"`
+	WhoCanWatch       enum.WhoCanWatch           `json:"whoCanWatch"`
 	ReleaseTime       time.Time                  `json:"releaseTime"`
 	Status            enum.PublishCreationStatus `json:"status"`
 }

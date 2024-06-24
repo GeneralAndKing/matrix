@@ -9,6 +9,7 @@ import (
 	"kernel/pkg/chromedp_ext/easyjson"
 	"math"
 	"math/rand"
+	"net/http"
 	"os"
 	"time"
 
@@ -28,6 +29,18 @@ type Cookie struct {
 	Expires  float64 `json:"expires" yaml:"expires"`
 	HTTPOnly bool    `json:"httpOnly" yaml:"httpOnly"`
 	Secure   bool    `json:"secure" yaml:"secure"`
+}
+
+func (c Cookie) HttpCookie() *http.Cookie {
+	return &http.Cookie{
+		Name:     c.Name,
+		Value:    c.CValue,
+		Path:     c.Path,
+		Domain:   c.Domain,
+		Expires:  time.Unix(int64(c.Expires), 0),
+		HttpOnly: c.HTTPOnly,
+		Secure:   c.Secure,
+	}
 }
 
 func WithTimeOut(timeout time.Duration, tasks chromedp.Tasks) chromedp.ActionFunc {

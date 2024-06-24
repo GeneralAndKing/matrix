@@ -43,7 +43,7 @@ type DouyinCreation struct {
 	AssociatedHotspot string                     `gorm:"type:varchar(255)"`
 	SyncToToutiao     bool                       `gorm:"type:tinyint(1)"`
 	AllowedToSave     bool                       `gorm:"type:tinyint(1);not null"`
-	WhoCanWatch       uint                       `gorm:"type:integer;not null"`
+	WhoCanWatch       enum.WhoCanWatch           `gorm:"type:integer;not null"`
 	ReleaseTime       time.Time                  `gorm:"type:datetime;not null"`
 	Status            enum.PublishCreationStatus `gorm:"type:integer;not null"`
 	Message           string                     `gorm:"type:text;not null"`

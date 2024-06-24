@@ -27,8 +27,8 @@ func API(ctx context.Context, debug bool) http.Handler {
 		ctx.Next()
 		if ctx.Errors != nil {
 			ctx.JSON(ctx.Writer.Status(), gin.H{
-				"error": http.StatusText(ctx.Writer.Status()),
-				"ws":    ctx.Errors.String(),
+				"error":   http.StatusText(ctx.Writer.Status()),
+				"message": ctx.Errors.String(),
 			})
 		}
 
@@ -55,5 +55,11 @@ func API(ctx context.Context, debug bool) http.Handler {
 	userGroup.GET("/douyin", service.GetAllDouyinUser)
 	userGroup.PUT("/douyin/:id", service.UpdateDouyinUser)
 	engine.GET("/label", service.GetAllLabel)
+
+	utilsGroup := engine.Group("/utils")
+	utilsGroup.GET("/douyin/activity", service.DouyinActivity)
+	utilsGroup.GET("/douyin/hotspot", service.DouyinHotspot)
+	utilsGroup.GET("/douyin/challenge", service.DouyinChallengeSug)
+
 	return engine
 }

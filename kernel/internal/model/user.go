@@ -6,9 +6,18 @@ import (
 	"gorm.io/gorm"
 	"kernel/internal/model/dto"
 	"kernel/pkg/chromedp_ext"
+	"net/http"
 )
 
 type Cookies []chromedp_ext.Cookie
+
+func (c *Cookies) HttpCookies() []*http.Cookie {
+	var responses []*http.Cookie
+	for _, cookie := range *c {
+		responses = append(responses, cookie.HttpCookie())
+	}
+	return responses
+}
 
 func (c *Cookies) Scan(value interface{}) error {
 	v, _ := value.([]byte)
