@@ -1,9 +1,8 @@
-import { app, BrowserWindow, session } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import os from 'os'
 import { fileURLToPath } from 'url'
 import { enable, initialize } from '@electron/remote/main/index.js'
-import * as fs from 'node:fs'
 
 // https://quasar.dev/quasar-cli-vite/developing-electron-apps/frameless-electron-window#setting-frameless-window
 initialize()
@@ -13,7 +12,6 @@ const platform = process.platform || os.platform()
 const currentDir = fileURLToPath(new URL('.', import.meta.url))
 
 let mainWindow: BrowserWindow | undefined
-const appDir = path.dirname(app.getAppPath())
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -38,7 +36,7 @@ const createWindow = () => {
 
   enable(mainWindow.webContents)
   if (process.env.DEV) {
-    void mainWindow.loadURL('https://fingerprintjs.github.io/fingerprintjs/')
+    void mainWindow.loadURL(process.env.APP_URL)
   } else {
     void mainWindow.loadFile('index.html')
   }

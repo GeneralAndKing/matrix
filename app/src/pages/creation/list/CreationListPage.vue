@@ -90,7 +90,6 @@ const handleToInformation = (id: number) => {
             {{ props.row.description }}
           </q-td>
           <q-td key="count" :props="props" auto-width>
-            {{ props.row.paths }}
             <span class="text-green">1</span>
             <span class="text-gray" style="opacity: 0.2">-</span>
             <span class="text-red">2</span>

@@ -1,78 +1,48 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { onMounted, reactive } from 'vue'
-import InformationAccount from 'pages/creation/information/InformationAccount.vue'
-
-interface Data {
-  id: number,
-  informationSplitterModel: number,
-  tab: 'DouYin'
-}
+import { onMounted } from 'vue'
+import { useInformationStore } from 'stores/creation-store'
+import DouYinPublish from 'pages/creation/information/DouYinPublish.vue'
 
 const route = useRoute()
-const data = reactive<Data>({
-  id: 0,
-  informationSplitterModel: 30,
-  tab: 'DouYin'
-})
+const store = useInformationStore()
 
 onMounted(() => {
-  data.id = parseInt(route.params.id as string)
-  // document.body.style.zoom = '1'
+  const id = parseInt(route.params.id as string)
+  store.handleInformation(id)
 })
 
 </script>
 
 <template>
-  <q-card flat bordered style="height: calc(100vh - 68px)" class="q-pa-md q-pr-sm flex column">
-    <q-splitter
-      class="full-width flex row no-wrap "
-      v-model="data.informationSplitterModel"
-      style="max-height: 400px"
-      :limits="[30, 40]"
+  <q-card flat bordered style="height: calc(100vh - 68px)" class="q-px-md q-pr-sm flex column">
+    <q-tabs
+      v-model="store.styleData.tab"
+      dense
+      class="text-grey q-mt-sm"
+      active-color="primary"
+      indicator-color="primary"
+      align="left"
     >
-      <template v-slot:before>
-        <div class="q-mr-md">
-          <div class="text-h6">Our Changing Planet
-            <q-badge label="视频" color="teal-6"/>
-          </div>
-          <div>
-            Lorem ipsum dolor sit, amet consectetur adipisicing
-            elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi
-            minima assumenda consectetur culpa fuga nulla ullam. In, libero.
-          </div>
-          <div class="q-mt-md">
-            <q-chip size="12px" icon="event">
-              创建时间 2021-02-12 11:21:21
-            </q-chip>
-          </div>
+      <q-tab name="mails">
+        <div class="row q-gutter-x-sm">
+          <q-img alt="douyin" src="~assets/logo/douyin.svg" width="22px" height="22px"/>
+          <div>抖音</div>
         </div>
-      </template>
-      <template v-slot:separator>
-        <q-avatar color="primary" text-color="white" size="20px">
-          12
-        </q-avatar>
-      </template>
-      <template v-slot:after>
-        <q-scroll-area lass="fit" style="height: 150px; width: 100%">
-          <div class="q-mx-md resource">
-            <q-img style="border: 1px solid #000" width="200px" height="200px"
-                   src="C:\Users\zyue\Pictures\QQ截图20240128011140.png"/>
-            <q-img style="border: 1px solid #000" width="200px" height="200px"
-                   src="C:\Users\zyue\Pictures\webwxgetmsgimg.jpg"/>
-          </div>
-        </q-scroll-area>
-      </template>
-    </q-splitter>
-    <q-separator class="q-mt-md"/>
-    <InformationAccount/>
+      </q-tab>
+    </q-tabs>
+    <q-separator/>
+    <q-tab-panels v-model="store.styleData.tab" animated style="flex: 1">
+      <q-tab-panel name="mails" class="q-pa-none q-pt-sm">
+        <DouYinPublish />
+      </q-tab-panel>
+    </q-tab-panels>
   </q-card>
 </template>
 
 <style scoped lang="scss">
-.resource {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0px;
+:deep(.account-list-tab) {
+  flex-direction: row !important;
+  flex-wrap: nowrap;
 }
 </style>

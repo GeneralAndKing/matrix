@@ -11,6 +11,28 @@ export interface CreationRequest {
 export interface Creation extends BaseModal, CreationRequest {
 }
 
+export interface DouYinAccountRelation {
+  id: string
+  title: string
+  description: string
+  videoCoverPath?: string
+  location?: string
+  paster?: string
+  collectionName?: string
+  collectionNum?: number
+  associatedHotspot: string
+  syncToToutiao: boolean
+  allowedToSave: boolean
+  whoCanWatch: number
+  // 时间错
+  releaseTime: number
+}
+
+export interface CreationInformation {
+  creation: Creation
+  douyin: DouYinAccountRelation[]
+}
+
 export const CreationType: EnumModal[] = [
   { value: 1, label: '视频', color: 'teal-6' },
   { value: 2, label: '图文', color: 'cyan-6' }
@@ -27,6 +49,14 @@ export const CreationApi = {
     return api.get('/creation')
   },
   add: async (data: CreationRequest): Promise<void> => {
-    return api.post('/creation', data)
+    return api.post('/creation', {
+      Type: data.type,
+      Title: data.title,
+      Description: data.description,
+      Paths: data.paths
+    })
+  },
+  getInformation: async (id: number): Promise<CreationInformation> => {
+    return api.get<CreationInformation>(`/creation/${id}`)
   }
 }
