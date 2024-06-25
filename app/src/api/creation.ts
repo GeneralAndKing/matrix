@@ -23,7 +23,7 @@ export interface DouYinAccountRelation {
   associatedHotspot: string
   syncToToutiao: boolean
   allowedToSave: boolean
-  whoCanWatch: number
+  whoCanWatch: 1 | 2 | 3
   // 时间错
   releaseTime: number
 }
