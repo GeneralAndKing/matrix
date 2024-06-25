@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -127,6 +128,78 @@ func FetchActivity(cookies []*http.Cookie) ([]ActivityResponse, error) {
 
 }
 
-func FetchFlashmob(cookies []*http.Cookie) ([]FlashmobResponse, error) {
-	return nil, nil
+func FetchFlashmobRank(cookies []*http.Cookie) ([]FlashmobResponse, error) {
+	var (
+		result    FlashmobRankResult
+		responses = make([]FlashmobResponse, 0)
+	)
+	resp, err := douyinClient.R().SetResult(&result).
+		SetCookies(cookies).
+		SetQueryParams(map[string]string{
+			"source": "1",
+		}).
+		Get("/aweme/v1/flashmob/rank/")
+	if err != nil {
+		return nil, fmt.Errorf("failed to request flashmob rank")
+	}
+	if resp.IsSuccess() {
+		for _, cell := range result.RankCellList {
+			responses = append(responses, FlashmobResponse{
+				Name:  cell.Text,
+				Count: cell.Count,
+				Cover: cell.Cover.UrlList[0],
+			})
+		}
+		return responses, nil
+	}
+	return nil, fmt.Errorf("failed to request flashmob rank")
+
+}
+func FetchFlashmob(keyword string, cookies []*http.Cookie) ([]FlashmobResponse, error) {
+	var (
+		shootResult FlashmobShootResult
+		infoResult  FlashmobInfoResult
+		responses   = make([]FlashmobResponse, 0)
+	)
+	resp, err := douyinClient.R().SetResult(&shootResult).
+		SetCookies(cookies).
+		SetQueryParams(map[string]string{
+			"recommend_type": "2",
+			"query":          keyword,
+		}).
+		Get("/aweme/v1/flashmob/shoot/recommend/")
+	if err != nil {
+		return nil, fmt.Errorf("failed to request flashmob recommend")
+	}
+	querySlices := make([]string, 0)
+	if resp.IsSuccess() {
+		for _, recommend := range shootResult.RecommendList {
+			querySlices = append(querySlices, recommend.Text)
+		}
+		resp, err = douyinClient.R().SetResult(&infoResult).
+			SetCookies(cookies).
+			SetQueryParams(map[string]string{
+				"flash_mob_text": `["` + strings.Join(querySlices, `","`) + `"]`,
+			}).
+			Get("/web/api/media/flash_mob/infos")
+		if err != nil {
+			return nil, fmt.Errorf("failed to request flashmob info")
+		}
+		if resp.IsSuccess() {
+			for _, info := range infoResult.FlashMobInfoMap {
+				cover := ""
+				if len(info.FlashMobInfos.Cover.UrlList) > 0 {
+					cover = info.FlashMobInfos.Cover.UrlList[0]
+				}
+				responses = append(responses, FlashmobResponse{
+					Name:  info.FlashMobText,
+					Count: info.FlashMobInfos.Count,
+					Cover: cover,
+				})
+			}
+			return responses, nil
+		}
+
+	}
+	return nil, fmt.Errorf("failed to request flashmob")
 }

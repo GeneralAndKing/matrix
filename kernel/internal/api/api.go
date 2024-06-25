@@ -60,6 +60,7 @@ func API(ctx context.Context, debug bool) http.Handler {
 	utilsGroup.GET("/douyin/activity", service.DouyinActivity)
 	utilsGroup.GET("/douyin/hotspot", service.DouyinHotspot)
 	utilsGroup.GET("/douyin/challenge", service.DouyinChallengeSug)
+	utilsGroup.GET("/douyin/flashmob", service.DouyinFlashmob)
 
 	return engine
 }

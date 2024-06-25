@@ -66,3 +66,35 @@ func DouyinChallengeSug(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, responses)
 }
+
+func DouyinFlashmob(c *gin.Context) {
+	var (
+		responses  []douyin.FlashmobResponse
+		douyinUser model.DouyinUser
+		err        error
+	)
+	err = database.Sqlite3Transaction(c, func(db *gorm.DB) error {
+		if tx := db.Where("expired = 0").Order("RANDOM()").First(&douyinUser); tx.Error != nil {
+			return fmt.Errorf("failed to get douyinUser: %w", tx.Error)
+		}
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("no logined douyin accounts: %w", err))
+		} else {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	keyword := c.Query("keyword")
+	if len(keyword) == 0 {
+		responses, err = douyin.FetchFlashmobRank(douyinUser.Cookies.HttpCookies())
+	} else {
+		responses, err = douyin.FetchFlashmob(keyword, douyinUser.Cookies.HttpCookies())
+	}
+	if err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+	}
+	c.JSON(http.StatusOK, responses)
+}

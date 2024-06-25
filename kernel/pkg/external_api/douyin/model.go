@@ -144,3 +144,23 @@ type FlashmobInfoResult struct {
 		FlashMobText string `json:"flash_mob_text"`
 	} `json:"flash_mob_info_map"`
 }
+
+type FlashmobRankResult struct {
+	StatusCode   int    `json:"status_code"`
+	StatusMsg    string `json:"status_msg"`
+	RankCellList []struct {
+		FlashMobId      string `json:"flash_mob_id"`
+		AwemeId         string `json:"aweme_id"`
+		Count           int    `json:"count"`
+		Text            string `json:"text"`
+		Order           int    `json:"order"`
+		CreatorNickname string `json:"creator_nickname"`
+		InitiatorUid    string `json:"initiator_uid"`
+		Cover           struct {
+			Uri     string   `json:"uri"`
+			UrlList []string `json:"url_list"`
+			Width   int      `json:"width"`
+			Height  int      `json:"height"`
+		} `json:"cover"`
+	} `json:"rank_cell_list"`
+}
