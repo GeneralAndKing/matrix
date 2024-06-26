@@ -17,7 +17,7 @@ export interface DouYinAccountRelation {
   description: string
   videoCoverPath?: string
   location?: string
-  paster?: string
+  flashmob?: string
   collectionName?: string
   collectionNum?: number
   associatedHotspot: string
@@ -30,6 +30,10 @@ export interface DouYinAccountRelation {
 
 export interface CreationInformation {
   creation: Creation
+  douyin: DouYinAccountRelation[]
+}
+
+export interface CreationPublishRequest{
   douyin: DouYinAccountRelation[]
 }
 
@@ -56,7 +60,10 @@ export const CreationApi = {
       Paths: data.paths
     })
   },
-  getInformation: async (id: number): Promise<CreationInformation> => {
+  getInformation: async (id: string): Promise<CreationInformation> => {
     return api.get<CreationInformation>(`/creation/${id}`)
+  },
+  publish: async (creationId: string, data: CreationPublishRequest): Promise<void> => {
+    return api.post('/creation/publish', { data }, { params: { id: creationId } })
   }
 }

@@ -34,18 +34,6 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(async (response) => {
   LoadingBar.stop()
   const { status, data } = response
-  if (status >= 400 && status < 500) {
-    console.error(status, data)
-    throw new Error(`获取数据失败：${status}`)
-  }
-  if (status >= 500) {
-    console.error(status, data)
-    Notify.create({
-      type: 'negative',
-      message: '请求失败：服务器内部错误'
-    })
-    throw new Error(`服务器错误：${data}`)
-  }
   if (status === 201) {
     Notify.create({
       type: 'positive',
@@ -62,12 +50,21 @@ api.interceptors.response.use(async (response) => {
   }
   return data
 }, (error) => {
+  const { response } = error
   LoadingBar.stop()
+  console.error(error)
+  if (response.status >= 400 && response.status < 500) {
+    Notify.create({
+      type: 'warning',
+      message: '获取数据失败：请检查参数是否合法'
+    })
+    return Promise.reject(error.response)
+  }
   Notify.create({
     type: 'negative',
-    message: `请求失败：${error.message}`
+    message: '请求失败：服务器内部错误'
   })
-  return Promise.reject(error)
+  return Promise.reject(error.response)
 })
 
 export { axios, api, healthApi }

@@ -8,8 +8,7 @@ const route = useRoute()
 const store = useInformationStore()
 
 onMounted(() => {
-  const id = parseInt(route.params.id as string)
-  store.handleInformation(id)
+  store.handleInformation(route.params.id as string)
 })
 
 </script>
@@ -27,7 +26,10 @@ onMounted(() => {
       <q-tab name="mails">
         <div class="row q-gutter-x-sm">
           <q-img alt="douyin" src="~assets/logo/douyin.svg" width="22px" height="22px"/>
-          <div>抖音</div>
+          <div>
+            抖音
+            <q-badge v-if="store.data.douyin.length > 0" :label="store.data.douyin.length" />
+          </div>
         </div>
       </q-tab>
     </q-tabs>
