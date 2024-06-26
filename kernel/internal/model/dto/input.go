@@ -24,7 +24,7 @@ type PublishDouyinCreationInput struct {
 	Description       string           `json:"description" binding:"required"`
 	VideoCoverPath    string           `json:"videoCoverPath"`
 	Location          string           `json:"location"`
-	Paster            string           `json:"paster"`
+	Flashmob          string           `json:"flashmob"`
 	CollectionName    string           `json:"collectionName"`
 	CollectionNum     int              `json:"collectionNum"`
 	AssociatedHotspot string           `json:"associatedHotspot"`

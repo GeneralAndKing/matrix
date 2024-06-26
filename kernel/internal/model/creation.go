@@ -37,7 +37,7 @@ type DouyinCreation struct {
 	Description       string                     `gorm:"type:text;not null"`
 	VideoCoverPath    string                     `gorm:"type:varchar(255)"`
 	Location          string                     `gorm:"type:varchar(255)"`
-	Paster            string                     `gorm:"type:varchar(255)"`
+	Flashmob          string                     `gorm:"type:varchar(255)"`
 	CollectionName    string                     `gorm:"type:varchar(255)"`
 	CollectionNum     int                        `gorm:"type:int(11)"`
 	AssociatedHotspot string                     `gorm:"type:varchar(255)"`
@@ -58,7 +58,7 @@ func (c DouyinCreation) Output() dto.DouyinCreationOutput {
 		Description:       c.Description,
 		VideoCoverPath:    c.VideoCoverPath,
 		Location:          c.Location,
-		Paster:            c.Paster,
+		Paster:            c.Flashmob,
 		CollectionName:    c.CollectionName,
 		CollectionNum:     c.CollectionNum,
 		AssociatedHotspot: c.AssociatedHotspot,

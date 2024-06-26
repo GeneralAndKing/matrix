@@ -126,7 +126,7 @@ func PublishCreation(c *gin.Context) {
 				Description:       userInput.Description,
 				VideoCoverPath:    userInput.VideoCoverPath,
 				Location:          userInput.Location,
-				Paster:            userInput.Paster,
+				Flashmob:          userInput.Flashmob,
 				CollectionName:    userInput.CollectionName,
 				CollectionNum:     userInput.CollectionNum,
 				AssociatedHotspot: userInput.AssociatedHotspot,
