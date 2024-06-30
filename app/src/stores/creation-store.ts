@@ -23,7 +23,7 @@ export const useInformationStore = defineStore('information', () => {
   const handleInformation = async (id: string) => {
     const res = await CreationApi.getInformation(id)
     data.information = res
-    data.douyin = res.douyin ?? []
+    // data.douyin = res.douyin ?? []
     return res
   }
 
