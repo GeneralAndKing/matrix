@@ -36,7 +36,7 @@ const createWindow = () => {
 
   enable(mainWindow.webContents)
   if (process.env.DEV) {
-    void mainWindow.loadURL(process.env.APP_URL)
+    void mainWindow.loadURL('https://ip77.net')
   } else {
     void mainWindow.loadFile('index.html')
   }
