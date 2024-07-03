@@ -6,3 +6,4 @@
 .eslintrc.cjs
 /quasar.config.*.temporary.compiled*
 src-electron/fingerprint/random-fingerprint.js
+src-electron/lib/*.js

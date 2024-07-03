@@ -38,14 +38,18 @@ const createWindow = async () => {
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(
         currentDir,
-        path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER, 'electron-preload' + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
+        path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+          (kernel ? 'stealth.min' : 'electron-preload') + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
       )
     }
   })
 
   enable(mainWindow.webContents)
 
-  if (process.env.DEV) {
+  if (kernel) {
+    mainWindow.maximize()
+    void mainWindow.loadURL('about:blank')
+  } else if (process.env.DEV) {
     void mainWindow.loadURL(process.env.APP_URL)
   } else {
     void mainWindow.loadFile('index.html')

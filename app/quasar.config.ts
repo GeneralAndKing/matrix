@@ -188,33 +188,18 @@ export default configure((/* ctx */) => {
       // extendPackageJson (json) {},
 
       // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
-      preloadScripts: ['electron-preload'],
+      preloadScripts: ['electron-preload', 'lib/stealth.min'],
 
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
       bundler: 'builder', // 'packager' or 'builder'
-
-      packager: {
-        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
-        // https://www.electron.build/configuration/configuration
-        appId: 'Matrix',
-        productName: 'Matrix App'
-        // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
-        // osxSign: '',
-        // protocol: 'myapp://path',
-
-        // Windows only
-        // win32metadata: { ... }
-      },
-
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'app'
+        appId: 'app',
+        extraResources: [
+        ]
       }
     },
 
