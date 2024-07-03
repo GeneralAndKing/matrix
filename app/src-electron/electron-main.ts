@@ -4,6 +4,8 @@ import os from 'os'
 import { fileURLToPath } from 'url'
 import { enable, initialize } from '@electron/remote/main/index.js'
 
+// app.commandLine.appendSwitch('remote-debugging-port', '9222')
+// app.commandLine.appendSwitch('remote-allow-origins', 'http://localhost:9222')
 // https://quasar.dev/quasar-cli-vite/developing-electron-apps/frameless-electron-window#setting-frameless-window
 initialize()
 // needed in case process is undefined under Linux
@@ -13,7 +15,14 @@ const currentDir = fileURLToPath(new URL('.', import.meta.url))
 
 let mainWindow: BrowserWindow | undefined
 
-const createWindow = () => {
+let kernel = false
+for (const arg of process.argv) {
+  if (arg === '--kernel') {
+    kernel = true
+  }
+}
+console.log(`Current application ${kernel ? '' : 'not '}run Kernel mode.`)
+const createWindow = async () => {
   mainWindow = new BrowserWindow({
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
     minHeight: 600,
@@ -35,12 +44,12 @@ const createWindow = () => {
   })
 
   enable(mainWindow.webContents)
+
   if (process.env.DEV) {
-    void mainWindow.loadURL('https://ip77.net')
+    void mainWindow.loadURL(process.env.APP_URL)
   } else {
     void mainWindow.loadFile('index.html')
   }
-
   if (process.env.DEBUGGING) {
     // if on DEV or Production with debug enabled
     mainWindow.webContents.openDevTools()
@@ -90,10 +99,39 @@ const createWindow = () => {
   // mainWindow?.webContents.debugger.on('detach', (event, reason) => {
   //   console.log('Debugger detached due to: ', event, reason);
   // })
+
+  // const childrenView = new WebContentsView({
+  //   webPreferences: {
+  //     partition: 'dou-yin:test'
+  //   }
+  // })
+  // await childrenView.webContents.loadURL('https://www.douyin.com')
+  // const contentBounds = mainWindow.getContentBounds()
+  // childrenView.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
+  // mainWindow.contentView.addChildView(childrenView)
+  //
+  // const customSession = session.fromPartition('dou-yin:test')
+  // await customSession.cookies.set({
+  //   url: 'https://www.douyin.com/',
+  //   name: 'Hello',
+  //   value: 'Hello'
+  // })
+  // mainWindow?.on('maximize', () => {
+  //   const contentBounds = mainWindow?.getContentBounds()
+  //   if (contentBounds) {
+  //     childrenView?.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
+  //   }
+  // })
+  // mainWindow?.on('resize', () => {
+  //   const contentBounds = mainWindow?.getContentBounds()
+  //   if (contentBounds) {
+  //     childrenView?.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
+  //   }
+  // })
 }
 
 app.whenReady().then(async () => {
-  createWindow()
+  await createWindow()
 })
 
 app.on('window-all-closed', () => {
@@ -102,8 +140,8 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.on('activate', () => {
+app.on('activate', async () => {
   if (mainWindow === undefined) {
-    createWindow()
+    await createWindow()
   }
 })

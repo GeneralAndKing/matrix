@@ -60,38 +60,38 @@ contextBridge.exposeInMainWorld('FileApi', {
     }, {})
   }
 })
-let get = function (target, key) {
-  console.log(target,key)
-  let id = null
-  switch (key) {
-    case 'height':
-      id = 3123
-      break
-    case 'width':
-      id = 3123
-      break
-    case 'colorDepth':
-      id = 3213
-      break
-    case 'pixelDepth':
-      id = 3123
-      break
-  }
-  if (id != null) {
-    console.log(id)
-  }
-  let res = target[key]
-  if (typeof res === 'function') {
-    return res.bind(target)
-  } else {
-    return res
-  }
-}
-
-Object.defineProperty(window, 'screen', {
-  value: new Proxy(window.screen, { get })
-})
-console.log(window)
+// const get = function (target, key) {
+//   console.log(target, key)
+//   let id = null
+//   switch (key) {
+//     case 'height':
+//       id = 3123
+//       break
+//     case 'width':
+//       id = 3123
+//       break
+//     case 'colorDepth':
+//       id = 3213
+//       break
+//     case 'pixelDepth':
+//       id = 3123
+//       break
+//   }
+//   if (id != null) {
+//     console.log(id)
+//   }
+//   const res = target[key]
+//   if (typeof res === 'function') {
+//     return res.bind(target)
+//   } else {
+//     return res
+//   }
+// }
+//
+// Object.defineProperty(window, 'screen', {
+//   value: new Proxy(window.screen, { get })
+// })
+// console.log(window)
 // const generateFingerprint = () => {
 //   console.log('test')
 //   Object.defineProperty(navigator, 'userAgent', {
