@@ -127,7 +127,7 @@ func RefreshDouyinUser(c *gin.Context) {
 func GetAllDouyinUser(c *gin.Context) {
 	var (
 		users   []model.DouyinUser
-		outputs []dto.DouyinUserOutput
+		outputs = make([]dto.DouyinUserOutput, 0)
 	)
 
 	err := database.Sqlite3Transaction(c, func(db *gorm.DB) error {

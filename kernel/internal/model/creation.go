@@ -9,7 +9,7 @@ import (
 
 type Creation struct {
 	gorm.Model
-	Type        enum.Creation        `gorm:"type:tinyint(1)"`
+	Type        enum.Creation        `gorm:"type:integer;not null"`
 	Title       string               `gorm:"type:varchar(255);not null"`
 	Description string               `gorm:"type:text;not null"`
 	Paths       GenericArray[string] `gorm:"type:text"`

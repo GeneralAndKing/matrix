@@ -49,3 +49,13 @@ type CreationDetailOutput struct {
 	Creation CreationOutput         `json:"creation"`
 	Douyin   []DouyinCreationOutput `json:"douyin"`
 }
+
+type DouyinLiveOutput struct {
+	gorm.Model
+	LiveId   string                 `json:"liveId"`
+	Name     string                 `json:"name"`
+	DouyinId string                 `json:"description"`
+	Avatar   string                 `json:"avatar"`
+	Labels   []LabelOutput          `json:"labels"`
+	Monitor  enum.LiveMonitorStatus `json:"monitor"`
+}

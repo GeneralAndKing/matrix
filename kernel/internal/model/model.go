@@ -18,5 +18,5 @@ func (g GenericArray[T]) Value() (driver.Value, error) {
 }
 
 func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(new(Creation), new(DouyinUser), new(Label), new(DouyinCreation))
+	return db.AutoMigrate(new(Creation), new(DouyinUser), new(Label), new(DouyinCreation), new(DouyinLive))
 }

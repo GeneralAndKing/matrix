@@ -54,6 +54,13 @@ func API(ctx context.Context, debug bool) http.Handler {
 	userGroup.DELETE("/douyin/:id", service.DeleteDouyinUser)
 	userGroup.GET("/douyin", service.GetAllDouyinUser)
 	userGroup.PUT("/douyin/:id", service.UpdateDouyinUser)
+
+	liveGroup := engine.Group("/live")
+	liveGroup.GET("/douyin", service.GetAllDouyinLive)
+	liveGroup.POST("/douyin", service.AddDouyinLive)
+	liveGroup.PUT("/douyin/:id", service.UpdateDouyinLive)
+	liveGroup.DELETE("/douyin/:id", service.DeleteDouyinLive)
+
 	engine.GET("/label", service.GetAllLabel)
 
 	utilsGroup := engine.Group("/utils")

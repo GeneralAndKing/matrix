@@ -9,8 +9,10 @@ import (
 func Browse(c context.Context, fn func(ctx context.Context, cancel context.CancelFunc) error, options ...chromedp.ExecAllocatorOption) error {
 	var (
 		opts = append(chromedp.DefaultExecAllocatorOptions[:],
+			chromedp.Flag("disable-blink-features", "AutomationControlled"),
+			chromedp.Flag("kernel", true),
 			//chromedp.ExecPath("/Users/klein/Projects/matrix/app/dist/electron/Packaged/mac/Quasar App.app/Contents/MacOS/Quasar App"),
-			chromedp.Flag("headless", true),
+			chromedp.Flag("headless", false),
 		)
 	)
 	opts = append(opts, options...)

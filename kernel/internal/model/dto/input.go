@@ -33,3 +33,8 @@ type PublishDouyinCreationInput struct {
 	WhoCanWatch       enum.WhoCanWatch `json:"whoCanWatch" binding:"required"`
 	ReleaseTime       time.Time        `json:"releaseTime" binding:"required"`
 }
+
+type AddDouyinLiveInput struct {
+	LiveId string   `json:"liveId" binding:"required"`
+	Labels []string `json:"labels" `
+}

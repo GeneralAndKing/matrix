@@ -3,6 +3,7 @@ package enum
 type Creation uint
 type PublishCreationStatus uint
 type WhoCanWatch uint
+type LiveMonitorStatus uint
 
 const (
 	PendingCreationStatus PublishCreationStatus = iota + 1
@@ -19,4 +20,9 @@ const (
 	PublishWatch WhoCanWatch = iota + 1
 	FriendWatch
 	SelfWatch
+)
+const (
+	PauseLiveMonitorStatus LiveMonitorStatus = iota + 1
+	RunningLiveMonitorStatus
+	NotExistLiveMonitorStatus
 )
