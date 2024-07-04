@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, HandlerDetails, WindowOpenHandlerResponse } from 'electron'
 import path from 'path'
 import os from 'os'
 import { fileURLToPath } from 'url'
@@ -92,7 +92,32 @@ const createWindow = async () => {
     //     console.error('Failed to get browser version:', error);
     //   });
   })
+  mainWindow.webContents.setWindowOpenHandler((details: HandlerDetails): WindowOpenHandlerResponse => {
+    if (details.url) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          title: details.frameName,
+          autoHideMenuBar: true,
+          parent: mainWindow,
+          resizable: false,
+          maximizable: true,
+          webPreferences: {
+            preload: path.resolve(
+              currentDir,
+              path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+                (kernel ? 'stealth.min' : 'electron-preload') + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
+            ),
+            sandbox: false,
+            contextIsolation: true,
+            webSecurity: false
+          }
+        }
 
+      }
+    }
+    return { action: 'deny' }
+  })
   // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
   //   details.requestHeaders['User-Agent'] = 'Mozilla/8.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
   //   callback({ requestHeaders: details.requestHeaders })
