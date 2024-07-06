@@ -1,8 +1,13 @@
-import { app, BrowserWindow, HandlerDetails, WindowOpenHandlerResponse } from 'electron'
-import path from 'path'
 import os from 'os'
+import path from 'path'
 import { fileURLToPath } from 'url'
 import { enable, initialize } from '@electron/remote/main/index.js'
+import {
+  BrowserWindow,
+  HandlerDetails,
+  WindowOpenHandlerResponse,
+  app
+} from 'electron'
 
 // app.commandLine.appendSwitch('remote-debugging-port', '9222')
 // app.commandLine.appendSwitch('remote-allow-origins', 'http://localhost:9222')
@@ -38,8 +43,11 @@ const createWindow = async () => {
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(
         currentDir,
-        path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
-          (kernel ? 'stealth.min' : 'electron-preload') + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
+        path.join(
+          process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+          (kernel ? 'stealth.min' : 'electron-preload') +
+            process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION
+        )
       )
     }
   })
@@ -80,7 +88,6 @@ const createWindow = async () => {
     //   "console.log('hello');" +
     //   "alert('test')"
     // )
-
     // mainWindow?.webContents.debugger.sendCommand('Page.addScriptToEvaluateOnNewDocument', {
     //   'source': 'console.log("hello!")'
     // })
@@ -92,32 +99,36 @@ const createWindow = async () => {
     //     console.error('Failed to get browser version:', error);
     //   });
   })
-  mainWindow.webContents.setWindowOpenHandler((details: HandlerDetails): WindowOpenHandlerResponse => {
-    if (details.url) {
-      return {
-        action: 'allow',
-        overrideBrowserWindowOptions: {
-          title: details.frameName,
-          autoHideMenuBar: true,
-          parent: mainWindow,
-          resizable: false,
-          maximizable: true,
-          webPreferences: {
-            preload: path.resolve(
-              currentDir,
-              path.join(process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
-                (kernel ? 'stealth.min' : 'electron-preload') + process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION)
-            ),
-            sandbox: false,
-            contextIsolation: true,
-            webSecurity: false
+  mainWindow.webContents.setWindowOpenHandler(
+    (details: HandlerDetails): WindowOpenHandlerResponse => {
+      if (details.url) {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            title: details.frameName,
+            autoHideMenuBar: true,
+            parent: mainWindow,
+            resizable: false,
+            maximizable: true,
+            webPreferences: {
+              preload: path.resolve(
+                currentDir,
+                path.join(
+                  process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+                  (kernel ? 'stealth.min' : 'electron-preload') +
+                    process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION
+                )
+              ),
+              sandbox: false,
+              contextIsolation: true,
+              webSecurity: false
+            }
           }
         }
-
       }
+      return { action: 'deny' }
     }
-    return { action: 'deny' }
-  })
+  )
   // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
   //   details.requestHeaders['User-Agent'] = 'Mozilla/8.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
   //   callback({ requestHeaders: details.requestHeaders })

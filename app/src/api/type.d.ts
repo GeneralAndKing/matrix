@@ -6,7 +6,7 @@ export interface BaseModal {
 }
 
 export interface EnumModal {
-  value: number,
-  label: string,
+  value: number
+  label: string
   color: string
 }

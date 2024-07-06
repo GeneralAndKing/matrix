@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, reactive } from 'vue'
 import { Creation, CreationApi, CreationTypeMap } from 'src/api/creation'
 import { QTableProps, useQuasar } from 'quasar'
@@ -17,8 +16,8 @@ const columns: QTableProps['columns'] = [
 ]
 
 interface Data {
-  creationList: Creation[],
-  loading: boolean,
+  creationList: Creation[]
+  loading: boolean
   search: string
 }
 
@@ -29,8 +28,9 @@ const data = reactive<Data>({
 })
 
 const handleData = () => {
-  CreationApi.getAll()
-    .then(res => { data.creationList = res })
+  CreationApi.getAll().then((res) => {
+    data.creationList = res
+  })
 }
 
 onMounted(() => {
@@ -51,7 +51,6 @@ const handleAdd = () => {
 const handleToInformation = (id: number) => {
   void router.push(`creation/information/${id}`)
 }
-
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, reactive } from 'vue'
 import { DouYinUserApi, DouYinUser } from 'src/api/user'
 import { date, QSelectProps, QTableProps, useQuasar } from 'quasar'
@@ -11,11 +10,11 @@ interface ActionState {
 }
 
 interface Data {
-  userList: (DouYinUser & ActionState)[],
-  labelList: string[],
-  filterLabelList: string[],
-  labelLoading: boolean,
-  loading: boolean,
+  userList: (DouYinUser & ActionState)[]
+  labelList: string[]
+  filterLabelList: string[]
+  labelLoading: boolean
+  loading: boolean
   search: string
 }
 
@@ -31,31 +30,53 @@ const data = reactive<Data>({
 
 const columns: QTableProps['columns'] = [
   { name: 'avatar', label: '', align: 'left', field: 'avatar' },
-  { name: 'name', label: '用户名称', align: 'left', field: 'name', sortable: true },
-  { name: 'douyinId', label: '抖音 ID', align: 'left', field: 'douyinId', sortable: true },
+  {
+    name: 'name',
+    label: '用户名称',
+    align: 'left',
+    field: 'name',
+    sortable: true
+  },
+  {
+    name: 'douyinId',
+    label: '抖音 ID',
+    align: 'left',
+    field: 'douyinId',
+    sortable: true
+  },
   { name: 'description', label: '描述', align: 'left', field: 'description' },
   { name: 'labels', label: '标签', align: 'left', field: 'labels' },
-  { name: 'status', label: '状态', align: 'center', field: 'ID', sortable: true },
+  {
+    name: 'status',
+    label: '状态',
+    align: 'center',
+    field: 'ID',
+    sortable: true
+  },
   { name: 'action', label: '操作', align: 'center', field: 'ID' }
 ]
 
 const handleData = () => {
   data.loading = true
-  DouYinUserApi.getAll().then(res => {
-    data.userList = res ?? []
-  }).finally(() => {
-    data.loading = false
-  })
+  DouYinUserApi.getAll()
+    .then((res) => {
+      data.userList = res ?? []
+    })
+    .finally(() => {
+      data.loading = false
+    })
 }
 
 const handleLabels = () => {
   data.labelLoading = true
-  LabelApi.getAll().then(res => {
-    data.labelList = (res ?? []).map(item => item.Name)
-    data.filterLabelList = (res ?? []).map(item => item.Name)
-  }).finally(() => {
-    data.labelLoading = false
-  })
+  LabelApi.getAll()
+    .then((res) => {
+      data.labelList = (res ?? []).map((item) => item.Name)
+      data.filterLabelList = (res ?? []).map((item) => item.Name)
+    })
+    .finally(() => {
+      data.labelLoading = false
+    })
 }
 
 onMounted(() => {
@@ -64,16 +85,14 @@ onMounted(() => {
 })
 
 const handleAdd = async () => {
-  DouYinUserApi.add()
-    .then(handleData)
+  DouYinUserApi.add().then(handleData)
 }
 
 const handleRefresh = (row: DouYinUser, rowIndex: number) => {
   data.userList[rowIndex].refreshLoading = true
-  DouYinUserApi.refresh(row.ID)
-    .finally(() => {
-      data.userList[rowIndex].refreshLoading = false
-    })
+  DouYinUserApi.refresh(row.ID).finally(() => {
+    data.userList[rowIndex].refreshLoading = false
+  })
 }
 
 const handleManager = async (row: DouYinUser) => {
@@ -87,8 +106,7 @@ const handleDelete = (row: DouYinUser) => {
     cancel: { color: 'primary', outline: true },
     ok: { color: 'negative', outline: true }
   }).onOk(() => {
-    DouYinUserApi.delete(row.ID)
-      .then(handleData)
+    DouYinUserApi.delete(row.ID).then(handleData)
   })
 }
 
@@ -108,17 +126,21 @@ const handleFilterLabel: QSelectProps['onFilter'] = (val: string, doneFn) => {
     } else {
       const needle = val.toLowerCase()
       data.filterLabelList = data.labelList.filter(
-        v => v.toLowerCase().indexOf(needle) > -1
+        (v) => v.toLowerCase().indexOf(needle) > -1
       )
     }
   })
 }
 
-const handleUpdateLabel = (row: DouYinUser, label: string[], initialValue: string[]) => {
-  DouYinUserApi.update(row.ID, label)
-    .catch(() => { row.labels = initialValue })
+const handleUpdateLabel = (
+  row: DouYinUser,
+  label: string[],
+  initialValue: string[]
+) => {
+  DouYinUserApi.update(row.ID, label).catch(() => {
+    row.labels = initialValue
+  })
 }
-
 </script>
 
 <template>

@@ -10,7 +10,6 @@ const store = useInformationStore()
 onMounted(() => {
   store.handleInformation(route.params.id as string)
 })
-
 </script>
 
 <template>

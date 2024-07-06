@@ -1,3 +1,4 @@
+import * as fs from 'node:fs'
 /**
  * This file is used specifically for security reasons.
  * Here you can access Nodejs stuff and inject functionality into
@@ -29,7 +30,6 @@
  */
 import { BrowserWindow } from '@electron/remote'
 import { contextBridge } from 'electron'
-import * as fs from 'node:fs'
 
 contextBridge.exposeInMainWorld('WindowsApi', {
   minimize: () => {
@@ -51,13 +51,15 @@ contextBridge.exposeInMainWorld('WindowsApi', {
 
 contextBridge.exposeInMainWorld('FileApi', {
   filePathListExist: (filePathList: string[]): Record<string, boolean> => {
-    return filePathList.map(path => ({
-      path,
-      exist: fs.existsSync(path)
-    })).reduce((acc: Record<string, boolean>, file) => {
-      acc[file.path] = file.exist
-      return acc
-    }, {})
+    return filePathList
+      .map((path) => ({
+        path,
+        exist: fs.existsSync(path)
+      }))
+      .reduce((acc: Record<string, boolean>, file) => {
+        acc[file.path] = file.exist
+        return acc
+      }, {})
   }
 })
 // const get = function (target, key) {

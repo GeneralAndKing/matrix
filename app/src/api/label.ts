@@ -1,7 +1,7 @@
 import { api } from 'boot/request'
 import { BaseModal } from 'src/api/type'
 
-export interface Label extends BaseModal{
+export interface Label extends BaseModal {
   Name: string
 }
 

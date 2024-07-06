@@ -75,7 +75,8 @@ const healthStore = useHealthStore()
 const $q = useQuasar()
 
 const menus = [
-  { name: '创作集合', icon: 'video_library', path: '/creation', exact: false }
+  // { name: '创作集合', icon: 'video_library', path: '/creation', exact: false },
+  { name: '我的直播', icon: 'live_tv', path: '/live', exact: false }
 ]
 
 const handleMinimize = () => {

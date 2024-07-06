@@ -29,12 +29,16 @@ export interface DouYinFlashmobResponse {
 }
 
 export const DouYinApi = {
-  getHotspot: async (keyword: string = ''): Promise<DouYinHotspotResponse[]> => {
+  getHotspot: async (
+    keyword: string = ''
+  ): Promise<DouYinHotspotResponse[]> => {
     return await api.get('/utils/douyin/hotspot', {
       params: { keyword }
     })
   },
-  getChallenge: async (keyword: string = ''): Promise<DouYinChallengeSugResponse[]> => {
+  getChallenge: async (
+    keyword: string = ''
+  ): Promise<DouYinChallengeSugResponse[]> => {
     return await api.get('/utils/douyin/challenge', {
       params: { keyword }
     })
@@ -42,7 +46,9 @@ export const DouYinApi = {
   getActivity: async (): Promise<DouYinActivityResponse[]> => {
     return await api.get('/utils/douyin/activity')
   },
-  getFlashmob: async (keyword: string = ''): Promise<DouYinFlashmobResponse[]> => {
+  getFlashmob: async (
+    keyword: string = ''
+  ): Promise<DouYinFlashmobResponse[]> => {
     return await api.get('/utils/douyin/flashmob', {
       params: { keyword }
     })

@@ -1,7 +1,11 @@
 <script setup lang="ts">
-
 import { QEditor, QFile, useDialogPluginComponent, useQuasar } from 'quasar'
-import { Creation, CreationApi, CreationType, CreationTypeMap } from 'src/api/creation'
+import {
+  Creation,
+  CreationApi,
+  CreationType,
+  CreationTypeMap
+} from 'src/api/creation'
 import { computed, onMounted, reactive, ref } from 'vue'
 import _ from 'lodash'
 
@@ -10,7 +14,8 @@ interface Data {
   tags: string[]
 }
 
-const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
+  useDialogPluginComponent()
 
 const props = defineProps<{
   item: Creation | null
@@ -32,12 +37,16 @@ const descriptionEditorRef = ref<QEditor | null>(null)
 const fileRef = ref<QFile | null>(null)
 const data = reactive<Data>({
   creation: defaultCreation,
-  tags: ['#小狗快快', '#我不想再来', '#你会怎么看这世界👓', '#如果这个雨一直下💧', '#让我重生一次']
+  tags: [
+    '#小狗快快',
+    '#我不想再来',
+    '#你会怎么看这世界👓',
+    '#如果这个雨一直下💧',
+    '#让我重生一次'
+  ]
 })
 
-defineEmits([
-  ...useDialogPluginComponent.emits
-])
+defineEmits([...useDialogPluginComponent.emits])
 
 const dataHook = computed(() => {
   if (props.item) {
@@ -67,7 +76,9 @@ onMounted(() => {
 const handleSave = async () => {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = data.creation.description
-  const description = tempDiv.innerText.replaceAll('close', '').replace(/\s+/g, ' ')
+  const description = tempDiv.innerText
+    .replaceAll('close', '')
+    .replace(/\s+/g, ' ')
   await CreationApi.add({
     ...data.creation,
     description
@@ -83,15 +94,17 @@ const handleDescriptionAddTag = (tag: string) => {
     })
     return
   }
-  edit.runCmd('insertHTML',
-    `&nbsp;<div class="tag-info row inline items-center" contenteditable="false">&nbsp;<span>${tag}</span>&nbsp;<i class="q-icon material-icons cursor-pointer" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">close</i></div>&nbsp;`)
+  edit.runCmd(
+    'insertHTML',
+    `&nbsp;<div class="tag-info row inline items-center" contenteditable="false">&nbsp;<span>${tag}</span>&nbsp;<i class="q-icon material-icons cursor-pointer" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">close</i></div>&nbsp;`
+  )
   edit.focus()
 }
 
 function extractHashtagStrings (input: string): string[] {
   const matches = input.match(/(?<=(&nbsp;|\s))#(\S+?)(?=(&nbsp;|\s))/g)
   if (matches) {
-    return matches.map(match => match.trim())
+    return matches.map((match) => match.trim())
   }
   return []
 }
@@ -156,11 +169,12 @@ const handleRemoveFile = (item: string) => {
 }
 
 const filePathExist = computed(() => {
-  const booleans = window.FileApi.filePathListExist(data.creation.paths.map(item => `${item}`))
+  const booleans = window.FileApi.filePathListExist(
+    data.creation.paths.map((item) => `${item}`)
+  )
   console.log(booleans)
   return booleans
 })
-
 </script>
 
 <template>

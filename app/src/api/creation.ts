@@ -8,8 +8,7 @@ export interface CreationRequest {
   paths: string[]
 }
 
-export interface Creation extends BaseModal, CreationRequest {
-}
+export interface Creation extends BaseModal, CreationRequest {}
 
 export interface DouYinAccountRelation {
   id: string
@@ -33,7 +32,7 @@ export interface CreationInformation {
   douyin: DouYinAccountRelation[]
 }
 
-export interface CreationPublishRequest{
+export interface CreationPublishRequest {
   douyin: DouYinAccountRelation[]
 }
 
@@ -42,11 +41,13 @@ export const CreationType: EnumModal[] = [
   { value: 2, label: '图文', color: 'cyan-6' }
 ]
 
-export const CreationTypeMap: Record<number, EnumModal> =
-  CreationType.reduce((acc: Record<number, EnumModal>, data) => {
+export const CreationTypeMap: Record<number, EnumModal> = CreationType.reduce(
+  (acc: Record<number, EnumModal>, data) => {
     acc[data.value] = data
     return acc
-  }, {})
+  },
+  {}
+)
 
 export const CreationApi = {
   getAll: async (): Promise<Creation[]> => {
@@ -63,7 +64,14 @@ export const CreationApi = {
   getInformation: async (id: string): Promise<CreationInformation> => {
     return api.get<CreationInformation>(`/creation/${id}`)
   },
-  publish: async (creationId: string, data: CreationPublishRequest): Promise<void> => {
-    return api.post('/creation/publish', { data }, { params: { id: creationId } })
+  publish: async (
+    creationId: string,
+    data: CreationPublishRequest
+  ): Promise<void> => {
+    return api.post(
+      '/creation/publish',
+      { data },
+      { params: { id: creationId } }
+    )
   }
 }

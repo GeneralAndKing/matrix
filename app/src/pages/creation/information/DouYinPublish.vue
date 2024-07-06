@@ -11,21 +11,25 @@ import {
   DouYinHotspotResponse
 } from 'src/api/dou-yin'
 import { formatChineseNumber, formatNumber } from 'src/utils'
-import { DOU_YIN_GLOBAL_TAB, DouYinPublishForm, useDouYinPublishStore } from 'stores/publish-store'
+import {
+  DOU_YIN_GLOBAL_TAB,
+  DouYinPublishForm,
+  useDouYinPublishStore
+} from 'stores/publish-store'
 import _ from 'lodash'
 import { useRoute } from 'vue-router'
 
 interface Data {
-  userList: DouYinUser[],
-  filterUserList: DouYinUser[],
-  publishList: number[],
-  activityList: DouYinActivityResponse[],
-  challengeList: DouYinChallengeSugResponse[],
-  challengeLoading: boolean,
-  hotspotList: DouYinHotspotResponse[],
-  hotspotLoading: boolean,
-  flashmobList: DouYinFlashmobResponse[],
-  flashmobLoading: boolean,
+  userList: DouYinUser[]
+  filterUserList: DouYinUser[]
+  publishList: number[]
+  activityList: DouYinActivityResponse[]
+  challengeList: DouYinChallengeSugResponse[]
+  challengeLoading: boolean
+  hotspotList: DouYinHotspotResponse[]
+  hotspotLoading: boolean
+  flashmobList: DouYinFlashmobResponse[]
+  flashmobLoading: boolean
   currentConfig: DouYinPublishForm
 }
 
@@ -54,31 +58,34 @@ const data = reactive<Data>({
     whoCanWatch: 1,
     releaseTime: 0,
     releaseType: 0,
-    releaseDateString: date.formatDate(date.addToDate(new Date(), { hour: 2 }), 'YYYY-MM-DD HH:mm')
+    releaseDateString: date.formatDate(
+      date.addToDate(new Date(), { hour: 2 }),
+      'YYYY-MM-DD HH:mm'
+    )
   }
 })
 
 const handleInitDouYinData = () => {
-  DouYinUserApi.getAll().then(res => {
+  DouYinUserApi.getAll().then((res) => {
     data.userList = res
   })
-  DouYinApi.getActivity().then(res => {
-    data.activityList = res.filter(item => item.challenges.length > 0)
+  DouYinApi.getActivity().then((res) => {
+    data.activityList = res.filter((item) => item.challenges.length > 0)
   })
   data.hotspotLoading = true
   DouYinApi.getHotspot()
-    .then(res => {
+    .then((res) => {
       data.hotspotList = res
     })
     .then(() => {
       data.hotspotLoading = false
     })
-  DouYinApi.getChallenge().then(res => {
+  DouYinApi.getChallenge().then((res) => {
     data.challengeList = res
   })
   data.flashmobLoading = true
   DouYinApi.getFlashmob()
-    .then(res => {
+    .then((res) => {
       data.flashmobList = res
     })
     .finally(() => {
@@ -96,7 +103,9 @@ onMounted(async () => {
 })
 
 const getConfigById = (id: string) => {
-  const existConfig = store.data.information?.douyin.find(item => `${item.id}` === `${id}`)
+  const existConfig = store.data.information?.douyin.find(
+    (item) => `${item.id}` === `${id}`
+  )
   let config = publishStore.getDefaultConfig()
   if (existConfig) {
     config = publishStore.toConfigForm(existConfig)
@@ -107,15 +116,18 @@ const getConfigById = (id: string) => {
   return config
 }
 
-watch(() => store.styleData.douYinTab, (value, oldValue) => {
-  if (oldValue === DOU_YIN_GLOBAL_TAB) {
-    // 原来为全局配置的情况
-    data.currentConfig = _.cloneDeep(getConfigById(value))
-  } else if (value === DOU_YIN_GLOBAL_TAB) {
-    // 现在切换为全局配置的情况
-    data.currentConfig = _.cloneDeep(publishStore.currentBatchConfig)
+watch(
+  () => store.styleData.douYinTab,
+  (value, oldValue) => {
+    if (oldValue === DOU_YIN_GLOBAL_TAB) {
+      // 原来为全局配置的情况
+      data.currentConfig = _.cloneDeep(getConfigById(value))
+    } else if (value === DOU_YIN_GLOBAL_TAB) {
+      // 现在切换为全局配置的情况
+      data.currentConfig = _.cloneDeep(publishStore.currentBatchConfig)
+    }
   }
-})
+)
 
 const handleInnerTabChange = (value: string) => {
   // 全局配置切换到特定配置
@@ -135,8 +147,16 @@ const handleInnerTabChange = (value: string) => {
     return
   }
   // 特定配置切换到全局配置或者特定配置，先找到原来是否有配置
-  const existConfig = store.data.douyin.find(item => `${item.id}` === `${store.styleData.douYinTab}`)
-  if (existConfig && _.isEqual(toRaw(existConfig), publishStore.toRequestParam(store.styleData.douYinTab, data.currentConfig))) {
+  const existConfig = store.data.douyin.find(
+    (item) => `${item.id}` === `${store.styleData.douYinTab}`
+  )
+  if (
+    existConfig &&
+    _.isEqual(
+      toRaw(existConfig),
+      publishStore.toRequestParam(store.styleData.douYinTab, data.currentConfig)
+    )
+  ) {
     // 如果与原来的相等
     store.styleData.douYinTab = value
   } else {
@@ -160,7 +180,9 @@ const handleFilterDouYinUser: QSelect['onFilter'] = (val, update) => {
 
   update(() => {
     const needle = val.toLowerCase()
-    data.filterUserList = data.userList.filter(v => (v.name.toLowerCase().indexOf(needle) > -1))
+    data.filterUserList = data.userList.filter(
+      (v) => v.name.toLowerCase().indexOf(needle) > -1
+    )
   })
 }
 
@@ -200,7 +222,10 @@ const handleFilterChallengeList: QSelect['onFilter'] = async (val, update) => {
   }
 }
 
-const handleAddHotspot = (activity: DouYinActivityResponse, id: number | undefined) => {
+const handleAddHotspot = (
+  activity: DouYinActivityResponse,
+  id: number | undefined
+) => {
   console.log(activity)
   if (id) {
     return
@@ -238,10 +263,14 @@ const handleApplyGlobalConfig = () => {
     return
   }
   // 需要覆盖的 id 列表
-  const overrideIdList = store.data.douyin.map(item => parseInt(item.id)).filter(id => data.publishList.includes(id))
+  const overrideIdList = store.data.douyin
+    .map((item) => parseInt(item.id))
+    .filter((id) => data.publishList.includes(id))
   const needNewIdList = _.difference(data.publishList, overrideIdList)
   if (overrideIdList.length > 0) {
-    const nameList = data.userList.filter(item => overrideIdList.includes(item.ID)).map(item => item.name)
+    const nameList = data.userList
+      .filter((item) => overrideIdList.includes(item.ID))
+      .map((item) => item.name)
     $q.dialog({
       title: '存在已经拥有配置的账号，确认继续吗？',
       message: `账号 ${nameList.join(',')} 都已经配置过了，再次进行全局配置会覆盖到每个项的配置。`,
@@ -249,25 +278,43 @@ const handleApplyGlobalConfig = () => {
     }).onOk(() => {
       // 覆盖数据
       for (const overrideId of overrideIdList) {
-        const index = store.data.douyin.findIndex(item => parseInt(item.id) === overrideId)
+        const index = store.data.douyin.findIndex(
+          (item) => parseInt(item.id) === overrideId
+        )
         if (index >= 0) {
-          store.data.douyin[index] = publishStore.toRequestParam(overrideId, data.currentConfig)
+          store.data.douyin[index] = publishStore.toRequestParam(
+            overrideId,
+            data.currentConfig
+          )
         }
       }
-      needNewIdList.forEach(userId => store.data.douyin.push(publishStore.toRequestParam(userId, data.currentConfig)))
+      needNewIdList.forEach((userId) =>
+        store.data.douyin.push(
+          publishStore.toRequestParam(userId, data.currentConfig)
+        )
+      )
       publishStore.currentBatchConfig = _.cloneDeep(data.currentConfig)
       $q.notify({ type: 'success', message: '操作成功' })
     })
   } else {
-    needNewIdList.forEach(userId => store.data.douyin.push(publishStore.toRequestParam(userId, data.currentConfig)))
+    needNewIdList.forEach((userId) =>
+      store.data.douyin.push(
+        publishStore.toRequestParam(userId, data.currentConfig)
+      )
+    )
     publishStore.currentBatchConfig = _.cloneDeep(data.currentConfig)
     $q.notify({ type: 'success', message: '操作成功' })
   }
 }
 
 const handleApplyCurrentConfig = () => {
-  const index = store.data.douyin.findIndex(item => `${item.id}` === `${store.styleData.douYinTab}`)
-  const config = publishStore.toRequestParam(store.styleData.douYinTab, data.currentConfig)
+  const index = store.data.douyin.findIndex(
+    (item) => `${item.id}` === `${store.styleData.douYinTab}`
+  )
+  const config = publishStore.toRequestParam(
+    store.styleData.douYinTab,
+    data.currentConfig
+  )
   if (index >= 0) {
     store.data.douyin[index] = config
   } else {
@@ -286,7 +333,9 @@ const handleResetConfig = () => {
 }
 
 const handleRemoveConfig = () => {
-  const index = store.data.douyin.findIndex(item => `${item.id}` === `${store.styleData.douYinTab}`)
+  const index = store.data.douyin.findIndex(
+    (item) => `${item.id}` === `${store.styleData.douYinTab}`
+  )
   if (index >= 0) {
     _.pullAt(store.data.douyin, [index])
     $q.notify({ type: 'success', message: '操作成功' })

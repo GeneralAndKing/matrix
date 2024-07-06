@@ -10,7 +10,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
  */
 declare module 'pinia' {
   export interface PiniaCustomProperties {
-    readonly router: Router;
+    readonly router: Router
   }
 }
 

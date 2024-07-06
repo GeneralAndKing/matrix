@@ -1,7 +1,7 @@
 import { api } from 'boot/request'
 import { BaseModal } from 'src/api/type'
 
-export interface DouYinUser extends BaseModal{
+export interface DouYinUser extends BaseModal {
   name: string
   description?: string
   douyinId: string

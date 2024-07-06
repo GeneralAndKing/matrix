@@ -10,7 +10,7 @@ export interface FileApi {
 
 declare global {
   interface Window {
-    WindowsApi: WindowsApi,
+    WindowsApi: WindowsApi
     FileApi: FileApi
   }
 }
