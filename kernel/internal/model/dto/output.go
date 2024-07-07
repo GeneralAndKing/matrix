@@ -54,7 +54,7 @@ type DouyinLiveOutput struct {
 	gorm.Model
 	LiveId   string                 `json:"liveId"`
 	Name     string                 `json:"name"`
-	DouyinId string                 `json:"description"`
+	DouyinId string                 `json:"douYinId"`
 	Avatar   string                 `json:"avatar"`
 	Labels   []LabelOutput          `json:"labels"`
 	Monitor  enum.LiveMonitorStatus `json:"monitor"`

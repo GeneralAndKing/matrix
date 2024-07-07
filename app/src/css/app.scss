@@ -60,6 +60,10 @@ html {
   .content-bg {
     background-color: rgb(249,250,251);
   }
+
+  .secondary-container {
+    background-color: rgba(220, 220, 220, 0.2);
+  }
 }
 
 .body--dark {
@@ -77,5 +81,8 @@ html {
 
   .content-bg {
     background-color: #383838;
+  }
+  .secondary-container {
+    background-color: rgb(159, 159, 159, .4);
   }
 }

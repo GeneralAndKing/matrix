@@ -27,7 +27,7 @@
     >
       <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: '0' }" style="flex: 1">
         <q-list padding>
-          <q-item v-for="item in menus" :key="item.name" :exact="item.exact" :to="item.path"  clickable v-ripple>
+          <q-item v-for="item in menus" :key="item.name" :exact="item.exact" :to="item.path" clickable v-ripple>
             <q-item-section avatar>
               <q-icon :name="item.icon"/>
             </q-item-section>

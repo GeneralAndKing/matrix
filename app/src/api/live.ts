@@ -19,5 +19,13 @@ export interface DouYinLive extends BaseModal {
 export const DouYinLiveApi = {
   getAll: async (): Promise<DouYinLive[]> => {
     return await api.get('/live/douyin')
+  },
+  add: async (liveId: string, labels: string[] = []): Promise<void> => {
+    return await api.post('/live/douyin', {
+      liveId, labels
+    })
+  },
+  delete: async (id: number): Promise<void> => {
+    return await api.delete(`/live/douyin/${id}`)
   }
 }

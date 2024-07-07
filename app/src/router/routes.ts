@@ -39,6 +39,23 @@ const routes: RouteRecordRaw[] = [
             path: '',
             name: 'LivePage',
             component: () => import('pages/live/LivePage.vue')
+          },
+          {
+            path: '/information/{id}',
+            name: 'LiveInformation',
+            component: () => import('pages/live/LiveInformation.vue'),
+            children: [
+              {
+                path: '/dashboard',
+                name: 'LiveDashboard',
+                component: () => import('pages/live/information/LiveDashboard.vue')
+              },
+              {
+                path: '/content',
+                name: 'LiveContent',
+                component: () => import('pages/live/information/LiveContent.vue')
+              }
+            ]
           }
         ]
       }

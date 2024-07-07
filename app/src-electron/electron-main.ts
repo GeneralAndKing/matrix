@@ -30,8 +30,8 @@ console.log(`Current application ${kernel ? '' : 'not '}run Kernel mode.`)
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
-    minHeight: 600,
-    minWidth: 1000,
+    minHeight: 800,
+    minWidth: 1400,
     width: 1000,
     height: 600,
     useContentSize: true,
