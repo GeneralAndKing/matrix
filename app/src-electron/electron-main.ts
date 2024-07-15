@@ -2,13 +2,10 @@ import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { enable, initialize } from '@electron/remote/main/index.js'
-import {
-  BrowserWindow,
-  HandlerDetails,
-  WindowOpenHandlerResponse,
-  app
-} from 'electron'
-
+import { app, BrowserWindow, HandlerDetails, WindowOpenHandlerResponse } from 'electron'
+import ffmpeg from 'fluent-ffmpeg'
+import ffmpegPath from '@ffmpeg-installer/ffmpeg'
+import { PassThrough } from 'stream'
 // app.commandLine.appendSwitch('remote-debugging-port', '9222')
 // app.commandLine.appendSwitch('remote-allow-origins', 'http://localhost:9222')
 // https://quasar.dev/quasar-cli-vite/developing-electron-apps/frameless-electron-window#setting-frameless-window
@@ -27,6 +24,58 @@ for (const arg of process.argv) {
   }
 }
 console.log(`Current application ${kernel ? '' : 'not '}run Kernel mode.`)
+const videoPath = path.join('C:\\Users\\zyue\\work\\matrix\\app\\test', 'output.mp4')
+const frameStream = new PassThrough()
+let isRecording: boolean = false
+let captureTimer: ReturnType<typeof setInterval> | null = null
+ffmpeg.setFfmpegPath(ffmpegPath.path)
+const captureInterval = 10
+const captureFrame = async () => {
+  if (!isRecording || !mainWindow) return
+  const image = await mainWindow.capturePage()
+  if (!isRecording) return
+  const buffer = image.toPNG()
+  frameStream.write(buffer)
+}
+const startRecording = () => {
+  isRecording = true
+  createVideo()
+  captureTimer = setInterval(captureFrame, captureInterval)
+  // mainWindow?.hide()
+  setTimeout(() => {
+    mainWindow?.close()
+  }, 30000)
+}
+
+const stopRecording = () => {
+  if (!isRecording) return
+  isRecording = false
+  if (captureTimer) {
+    clearInterval(captureTimer)
+    captureTimer = null
+  }
+  frameStream.end()
+}
+
+const createVideo = () => {
+  ffmpeg()
+    .input(frameStream)
+    .inputFormat('image2pipe')
+    .inputOptions('-framerate 20')
+    .outputOptions('-pix_fmt yuv420p')
+    .on('start', (commandLine) => {
+      console.log('start: Spawned Ffmpeg with command: ' + commandLine)
+    })
+    .on('error', (err, stdout, stderr) => {
+      console.error('Error: ' + err.message)
+      console.error('ffmpeg stderr: ' + stderr)
+    })
+    .on('end', () => {
+      console.log('End: Finished processing')
+    })
+    .save(videoPath)
+}
+
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
@@ -40,6 +89,7 @@ const createWindow = async () => {
       sandbox: false,
       contextIsolation: true,
       webSecurity: false,
+      // offscreen: true,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(
         currentDir,
@@ -58,7 +108,8 @@ const createWindow = async () => {
     mainWindow.maximize()
     void mainWindow.loadURL('about:blank')
   } else if (process.env.DEV) {
-    void mainWindow.loadURL(process.env.APP_URL)
+    // void mainWindow.loadURL(process.env.APP_URL)
+    void mainWindow.loadURL('https://live.douyin.com/4467754')
   } else {
     void mainWindow.loadFile('index.html')
   }
@@ -74,30 +125,6 @@ const createWindow = async () => {
 
   mainWindow.on('closed', () => {
     mainWindow = undefined
-  })
-  mainWindow.webContents.on('did-finish-load', () => {
-    // mainWindow?.webContents.executeJavaScript("\n" +
-    //   "const codeToInject = 'Object.defineProperty(navigator,\"language\", {" +
-    //   "  get: function () { return \"zh-Hans-CN\"; }, " +
-    //   "  set: function (a) {}" +
-    //   " });';" +
-    //   "const script = document.createElement('script');" +
-    //   "script.appendChild(document.createTextNode(codeToInject));" +
-    //   "(document.head || document.documentElement).appendChild(script);" +
-    //   "script.parentNode?.removeChild(script);" +
-    //   "console.log('hello');" +
-    //   "alert('test')"
-    // )
-    // mainWindow?.webContents.debugger.sendCommand('Page.addScriptToEvaluateOnNewDocument', {
-    //   'source': 'console.log("hello!")'
-    // })
-    // mainWindow?.webContents.debugger.sendCommand('Browser.getVersion')
-    //   .then(result => {
-    //     console.log('Browser version:', result);
-    //   })
-    //   .catch(error => {
-    //     console.error('Failed to get browser version:', error);
-    //   });
   })
   mainWindow.webContents.setWindowOpenHandler(
     (details: HandlerDetails): WindowOpenHandlerResponse => {
@@ -129,45 +156,16 @@ const createWindow = async () => {
       return { action: 'deny' }
     }
   )
-  // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-  //   details.requestHeaders['User-Agent'] = 'Mozilla/8.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-  //   callback({ requestHeaders: details.requestHeaders })
-  // })
-  // mainWindow?.webContents.debugger.on('message', (event, method, params) => {
-  //   console.log(event, method, params)
-  // })
-  // mainWindow?.webContents.debugger.on('detach', (event, reason) => {
-  //   console.log('Debugger detached due to: ', event, reason);
-  // })
-
-  // const childrenView = new WebContentsView({
-  //   webPreferences: {
-  //     partition: 'dou-yin:test'
-  //   }
-  // })
-  // await childrenView.webContents.loadURL('https://www.douyin.com')
-  // const contentBounds = mainWindow.getContentBounds()
-  // childrenView.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
-  // mainWindow.contentView.addChildView(childrenView)
-  //
-  // const customSession = session.fromPartition('dou-yin:test')
-  // await customSession.cookies.set({
-  //   url: 'https://www.douyin.com/',
-  //   name: 'Hello',
-  //   value: 'Hello'
-  // })
-  // mainWindow?.on('maximize', () => {
-  //   const contentBounds = mainWindow?.getContentBounds()
-  //   if (contentBounds) {
-  //     childrenView?.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
-  //   }
-  // })
-  // mainWindow?.on('resize', () => {
-  //   const contentBounds = mainWindow?.getContentBounds()
-  //   if (contentBounds) {
-  //     childrenView?.setBounds({ x: 56, y: 30, width: contentBounds.width - 56, height: contentBounds.height - 30 })
-  //   }
-  // })
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow?.webContents.setFrameRate(20)
+    mainWindow?.webContents.executeJavaScript('startRecording()')
+  })
+  mainWindow.on('close', async (event) => {
+    event.preventDefault() // 阻止窗口关闭
+    stopRecording()
+    mainWindow?.destroy() // 确保在保存完成后关闭窗口
+  })
+  startRecording()
 }
 
 app.whenReady().then(async () => {
